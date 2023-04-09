@@ -1,6 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox")
 require("dotenv").config()
-
+const path = require("path")
 const MAINNET_RPC_URL =
     process.env.MAINNET_RPC_URL ||
     process.env.ALCHEMY_MAINNET_RPC_URL ||
@@ -76,6 +76,21 @@ module.exports = {
             accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
             saveDeployments: true,
             chainId: 137,
+        },
+    },
+    resolve: {
+        fallback: {
+            stream: require.resolve("stream-browserify"),
+            assert: require.resolve("assert/"),
+        },
+    },
+    resolve: {
+        fallback: {
+            stream: require.resolve("stream-browserify"),
+            crypto: require.resolve("crypto-browserify"),
+            http: require.resolve("stream-http"),
+            https: require.resolve("https-browserify"),
+            assert: require.resolve("assert/"),
         },
     },
     etherscan: {
