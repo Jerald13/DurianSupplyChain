@@ -11,20 +11,20 @@ import theme from "theme/theme"
 import { ThemeEditorProvider } from "@hypertheme-editor/chakra-ui"
 
 ReactDOM.render(
-  <ChakraProvider theme={theme}>
-    <React.StrictMode>
-      <ThemeEditorProvider>
-        <HashRouter>
-          <Switch>
-            <Route path={`/auth`} component={AuthLayout} />
-            <Route path={`/admin`} component={AdminLayout} />
-            <Route path={`/rtl`} component={RTLLayout} />
-            <Route path={`/harvester`} component={HarvesterLayout} />
-            <Redirect from="/" to="/admin" />
-          </Switch>
-        </HashRouter>
-      </ThemeEditorProvider>
-    </React.StrictMode>
-  </ChakraProvider>,
-  document.getElementById("root")
+    <ChakraProvider theme={theme}>
+        <React.StrictMode>
+            <ThemeEditorProvider>
+                <HashRouter>
+                    <Switch>
+                        <Route path={`/auth`} component={AuthLayout} />
+                        <Route path={`/admin`} component={AdminLayout} />
+                        <Route path={`/rtl`} component={RTLLayout} />
+                        {/* <Route path={`/Harvester`} component={HarvesterLayout} /> */}
+                        <Redirect from="/" to="/admin" />
+                    </Switch>
+                </HashRouter>
+            </ThemeEditorProvider>
+        </React.StrictMode>
+    </ChakraProvider>,
+    document.getElementById("root")
 )

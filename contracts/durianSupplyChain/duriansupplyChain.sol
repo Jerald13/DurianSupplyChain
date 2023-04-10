@@ -7,7 +7,7 @@ import "../access/DistributorRole.sol";
 import "../access/RetailerRole.sol";
 import "../access/ConsumerRole.sol";
 
-contract duriansupplyChain is HarvesterRole, DistributorRole, RetailerRole, ConsumerRole {
+contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, ConsumerRole {
     address public owner;
 
     mapping(uint256 => durian) durians;

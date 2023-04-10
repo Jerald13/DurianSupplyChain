@@ -8,7 +8,7 @@ async function main() {
     //Deploy Contracts
 
     //Supply Chain
-    const DN = await ethers.getContractFactory("duriansupplyChain")
+    const DN = await ethers.getContractFactory("durianSupplyChain")
     const dn = await DN.deploy()
     await dn.deployed()
 
@@ -61,9 +61,9 @@ function saveFrontendFiles({ dnAddress, csAddress, drAddress, hrAddress, rrAddre
     }
 
     // Save Contracts ABI to file
-    const DNArtifact = artifacts.readArtifactSync("duriansupplyChain")
+    const DNArtifact = artifacts.readArtifactSync("durianSupplyChain")
     fs.writeFileSync(
-        path.join(contractsDir, "duriansupplyChain.json"),
+        path.join(contractsDir, "durianSupplyChain.json"),
         JSON.stringify(DNArtifact, null, 2)
     )
 
@@ -99,7 +99,7 @@ function saveFrontendFiles({ dnAddress, csAddress, drAddress, hrAddress, rrAddre
         contractsDir + "/contract-address.json",
         JSON.stringify(
             {
-                Durian: dnAddress,
+                DurianSupplyChain: dnAddress,
                 ConsumerRole: csAddress,
                 DistributorRole: drAddress,
                 HarvesterRole: hrAddress,
