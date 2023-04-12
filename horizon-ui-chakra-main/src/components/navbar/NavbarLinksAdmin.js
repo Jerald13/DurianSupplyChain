@@ -18,7 +18,6 @@ import { SidebarResponsive } from "components/sidebar/Sidebar"
 import navImage from "assets/img/layout/Navbar.png"
 import { MdNotificationsNone, MdInfoOutline } from "react-icons/md"
 import { FaEthereum } from "react-icons/fa"
-import routes from "routes.js"
 import { ThemeEditor } from "./ThemeEditor"
 
 import { Button, useToast, Flex, Text, Box } from "@chakra-ui/react"
@@ -27,6 +26,9 @@ import Web3Modal from "web3modal"
 import React, { useEffect, useState } from "react"
 import Web3 from "web3"
 
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import routes, { setAddHarvesterAuth } from "../../routes"
 const web3 = new Web3(Web3.givenProvider)
 const contractAbi = require("../../contracts/durianSupplyChain.json").abi
 const { DurianSupplyChain: contractAddress } = require("../../contracts/contract-address.json")
@@ -53,7 +55,6 @@ function App(props) {
     const [provider, setProvider] = useState(null)
     const [address, setAddress] = useState("")
     const [connected, setConnected] = useState(false)
-    const toast = useToast()
     const [isOwner, setIsOwner] = useState(false)
 
     const connectWeb3Modal = async () => {
@@ -71,38 +72,33 @@ function App(props) {
         })
 
         setWeb3Modal(newWeb3Modal)
-        // Read the cached address if available
-        const cachedProvider = newWeb3Modal.cachedProvider
-
-        if (cachedProvider && cachedProvider.accounts && cachedProvider.accounts.length > 0) {
-            const cachedAddress = cachedProvider.accounts[0]
-            console.log(cachedAddress)
-            setAddress(cachedAddress)
-            setConnected(true)
-        }
 
         const newProvider = await newWeb3Modal.connect()
         if (newProvider) {
             setProvider(new Web3Provider(newProvider))
             setConnected(true)
-
             // get the user address
             const signer = new Web3Provider(newProvider).getSigner()
             const address = await signer.getAddress()
             setAddress(address)
 
-            // toast({
-            //     title: "Connected",
-            //     description: `Connected to ${await newProvider.getNetwork().then((n) => n.name)}`,
-            //     status: "success",
-            //     duration: 5000,
-            //     isClosable: true,
+            sessionStorage.setItem("walletAddress", address)
+
+            // toast.success(`Succesfully Loginned`, {
+            //     position: toast.POSITION.TOP_RIGHT,
+            //     autoClose: 2000,
             // })
+
+            console.log("SSSSSSSSSS")
+            console.log(routes)
+            setAddHarvesterAuth(true)
+            window.location.reload(true)
         }
     }
 
     async function checkIsOwner() {
         console.log(contract)
+
         if (address !== "") {
             const owner = await contract.methods.owner().call()
             setIsOwner(owner === address)
@@ -111,7 +107,18 @@ function App(props) {
         }
     }
 
+    const checkSession = () => {
+        const sessionExists = sessionStorage.getItem("walletAddress") !== null
+
+        if (sessionStorage.getItem("walletAddress") !== null) {
+            setAddress(sessionStorage.getItem("walletAddress"))
+        }
+
+        setConnected(sessionExists)
+    }
+
     useEffect(() => {
+        checkSession()
         checkIsOwner()
     }, [web3, address])
 
@@ -119,17 +126,19 @@ function App(props) {
         if (web3Modal) {
             await web3Modal.clearCachedProvider()
 
+            sessionStorage.removeItem("walletAddress")
+
             setProvider(null)
             setConnected(false)
             setAddress("")
+            window.location.reload(true)
+        } else if (connected) {
+            sessionStorage.removeItem("walletAddress")
 
-            toast({
-                title: "Disconnected",
-                description: `Disconnected from wallet`,
-                status: "info",
-                duration: 5000,
-                isClosable: true,
-            })
+            setProvider(null)
+            setConnected(false)
+            setAddress("")
+            window.location.reload(true)
         }
     }
 
@@ -144,6 +153,7 @@ function App(props) {
             borderRadius="30px"
             boxShadow={shadow}
         >
+            <ToastContainer />
             <SearchBar
                 mb={secondary ? { base: "10px", md: "unset" } : "unset"}
                 me="10px"
