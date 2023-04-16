@@ -19,6 +19,7 @@ ReactDOM.render(
                         <Route path={`/auth`} component={AuthLayout} />
                         <Route path={`/admin`} component={AdminLayout} />
                         <Route path={`/rtl`} component={RTLLayout} />
+
                         {/* <Route path={`/Harvester`} component={HarvesterLayout} /> */}
                         <Redirect from="/" to="/admin" />
                     </Switch>

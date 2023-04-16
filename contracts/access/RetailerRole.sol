@@ -38,9 +38,9 @@ contract RetailerRole is Context {
     }
 
     // Define a function 'renounceRetailer' to renounce this role
-    function renounceRetailer() public {
-        _removeRetailer(_msgSender());
-    }
+    // function renounceRetailer() public {
+    //     _removeRetailer(_msgSender());
+    // }
 
     // Define an internal function '_addRetailer' to add this role, called by 'addRetailer'
     function _addRetailer(address account) internal {
@@ -49,7 +49,7 @@ contract RetailerRole is Context {
     }
 
     // Define an internal function '_removeRetailer' to remove this role, called by 'removeRetailer'
-    function _removeRetailer(address account) internal {
+    function removeRetailer(address account) public onlyRetailer {
         retailers.remove(account);
         emit RetailerRemoved(account);
     }

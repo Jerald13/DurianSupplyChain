@@ -24,6 +24,7 @@ export default function AdminNavbar(props) {
     };
   });
 
+  
   const { secondary, message, brandText } = props;
 
   // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)

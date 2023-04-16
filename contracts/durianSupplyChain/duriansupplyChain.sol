@@ -629,6 +629,17 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     function _transferOwnership(address newOwner) internal {
         address oldOwner = owner;
         owner = newOwner;
+        addDistributor(newOwner);
+        addHarvester(newOwner);
+        addRetailer(newOwner);
+        removeDistributor(oldOwner);
+        removeHarvester(oldOwner);
+        removeRetailer(oldOwner);
+
         emit OwnershipTransferred(oldOwner, newOwner);
+    }
+
+    function isOwner(address _owner) public view returns (bool) {
+        return owner == _owner;
     }
 }

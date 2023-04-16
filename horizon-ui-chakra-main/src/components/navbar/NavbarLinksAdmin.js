@@ -14,6 +14,8 @@ import {
 import { ItemContent } from "components/menu/ItemContent"
 import { SearchBar } from "components/navbar/searchBar/SearchBar"
 import { SidebarResponsive } from "components/sidebar/Sidebar"
+// import { Links } from "../sidebar/components/Links"
+
 // Assets
 import navImage from "assets/img/layout/Navbar.png"
 import { MdNotificationsNone, MdInfoOutline } from "react-icons/md"
@@ -25,10 +27,12 @@ import { Web3Provider } from "@ethersproject/providers"
 import Web3Modal from "web3modal"
 import React, { useEffect, useState } from "react"
 import Web3 from "web3"
-
+import { useHistory } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import routes, { setAddHarvesterAuth } from "../../routes"
+import { isCompositeComponent } from "react-dom/test-utils"
+import ChildComponent from "../sidebar/components/Links"
 const web3 = new Web3(Web3.givenProvider)
 const contractAbi = require("../../contracts/durianSupplyChain.json").abi
 const { DurianSupplyChain: contractAddress } = require("../../contracts/contract-address.json")
@@ -49,6 +53,7 @@ function App(props) {
         "14px 17px 40px 4px rgba(112, 144, 176, 0.18)",
         "14px 17px 40px 4px rgba(112, 144, 176, 0.06)"
     )
+    const history = useHistory()
     const borderButton = useColorModeValue("secondaryGray.500", "whiteAlpha.200")
 
     const [web3Modal, setWeb3Modal] = useState(null)
@@ -56,62 +61,79 @@ function App(props) {
     const [address, setAddress] = useState("")
     const [connected, setConnected] = useState(false)
     const [isOwner, setIsOwner] = useState(false)
+    const [acc, setAcc] = useState(false)
+
+    const [web3Instance, setWeb3Instance] = useState(null)
+    const [accountList, setAccountList] = useState([])
+    const [currentAccount, setCurrentAccount] = useState("")
+    const [isConnected, setIsConnected] = useState(false)
+
+    useEffect(() => {
+        const sessionExists = sessionStorage.getItem("walletAddress")
+        if (sessionExists) {
+            checkIsOwner()
+            setCurrentAccount(sessionStorage.getItem("walletAddress"))
+            setIsConnected(true)
+        } else {
+            connectWeb3Modal()
+        }
+    }, [])
 
     const connectWeb3Modal = async () => {
-        const newWeb3Modal = new Web3Modal({
-            network: "mainnet",
-            cacheProvider: true,
-            providerOptions: {
-                alchemy: {
-                    package: Web3Provider,
-                    options: {
-                        rpcUrl: "https://eth-sepolia.g.alchemy.com/v2/0qa4mNIYOwQeUgs1nJl3_X6sDRcuPkuE",
-                    },
-                },
-            },
-        })
+        console.log(isConnected + " Wgatus ")
 
-        setWeb3Modal(newWeb3Modal)
+        if (window.ethereum && isConnected) {
+            console.log("WJAT")
 
-        const newProvider = await newWeb3Modal.connect()
-        if (newProvider) {
-            setProvider(new Web3Provider(newProvider))
-            setConnected(true)
-            // get the user address
-            const signer = new Web3Provider(newProvider).getSigner()
-            const address = await signer.getAddress()
-            setAddress(address)
+            const web3 = new Web3(window.ethereum)
+            try {
+                await window.ethereum.enable()
+                setWeb3Instance(web3)
+                const accounts = await web3.eth.getAccounts()
+                setAccountList(accounts)
+                setCurrentAccount(accounts[0])
 
-            sessionStorage.setItem("walletAddress", address)
-
-            // toast.success(`Succesfully Loginned`, {
-            //     position: toast.POSITION.TOP_RIGHT,
-            //     autoClose: 2000,
-            // })
-
-            console.log("SSSSSSSSSS")
-            console.log(routes)
-            setAddHarvesterAuth(true)
-            window.location.reload(true)
+                // Set session storage when user switches account
+                sessionStorage.setItem("walletAddress", accounts[0])
+                window.ethereum.on("accountsChanged", function (accounts) {
+                    setAccountList(accounts)
+                    setCurrentAccount(accounts[0])
+                    sessionStorage.setItem("walletAddress", accounts[0])
+                    checkIsOwner()
+                })
+                checkIsOwner()
+            } catch (error) {
+                console.error(error)
+            }
+        } else {
+            console.log("Please install Metamask to use this feature")
         }
     }
 
     async function checkIsOwner() {
-        console.log(contract)
+        console.log(currentAccount + "AASX")
 
-        if (address !== "") {
-            const owner = await contract.methods.owner().call()
-            setIsOwner(owner === address)
-            console.log(owner + " : Owner")
-            console.log(address + " : Address")
+        if (currentAccount !== "") {
+            const owner = await contract.methods.isOwner(currentAccount).call()
+            const harvester = await contract.methods.isHarvester(currentAccount).call()
+            const retailer = await contract.methods.isRetailer(currentAccount).call()
+            console.log(owner)
+            if (owner) {
+                setAcc("Owner")
+            } else if (harvester) {
+                setAcc("Harvester")
+            } else if (retailer) {
+                setAcc("Retailer")
+            } else {
+                setAcc("User")
+            }
         }
     }
 
     const checkSession = () => {
-        const sessionExists = sessionStorage.getItem("walletAddress") !== null
-
-        if (sessionStorage.getItem("walletAddress") !== null) {
-            setAddress(sessionStorage.getItem("walletAddress"))
+        const sessionExists = sessionStorage.getItem("walletAddress")
+        if (sessionExists) {
+            setCurrentAccount(sessionStorage.getItem("walletAddress"))
         }
 
         setConnected(sessionExists)
@@ -120,27 +142,33 @@ function App(props) {
     useEffect(() => {
         checkSession()
         checkIsOwner()
-    }, [web3, address])
+    }, [web3, currentAccount])
+
+    useEffect(() => {
+        if (sessionStorage.getItem("loggedOut")) {
+            sessionStorage.removeItem("loggedOut")
+            disconnectWeb3Modal()
+        }
+    })
 
     const disconnectWeb3Modal = async () => {
-        if (web3Modal) {
-            await web3Modal.clearCachedProvider()
+        sessionStorage.removeItem("walletAddress")
+        window.ethereum.removeAllListeners()
+        setAccountList([])
+        setCurrentAccount("")
+        setIsConnected(false)
+        setWeb3Instance(null)
 
-            sessionStorage.removeItem("walletAddress")
-
-            setProvider(null)
-            setConnected(false)
-            setAddress("")
-            window.location.reload(true)
-        } else if (connected) {
-            sessionStorage.removeItem("walletAddress")
-
-            setProvider(null)
-            setConnected(false)
-            setAddress("")
-            window.location.reload(true)
-        }
+        history.push("/admin/CustomerPurchase")
     }
+
+    const handleLogin = async () => {
+        setIsConnected(true)
+        console.log(isConnected)
+    }
+    useEffect(() => {
+        connectWeb3Modal()
+    }, [isConnected])
 
     return (
         <Flex
@@ -212,7 +240,7 @@ function App(props) {
                 >
                     <Flex jusitfy="space-between" w="100%" mb="20px">
                         <Text fontSize="md" fontWeight="600" color={textColor}>
-                            Notifications
+                            Notifications {currentAccount}
                         </Text>
                         <Text
                             fontSize="sm"
@@ -311,17 +339,17 @@ function App(props) {
             <Menu>
                 <Menu>
                     <Flex alignItems="center">
-                        {connected ? (
+                        {isConnected ? (
                             <Flex alignItems="center">
                                 <Text mr={2} fontSize="sm" fontWeight="bold">
-                                    {isOwner ? "Owner" : "User"} : {shortAddress(address)}
+                                    {acc} : {shortAddress(currentAccount)}
                                 </Text>
                                 <Button onClick={disconnectWeb3Modal} size="sm">
                                     Disconnect
                                 </Button>
                             </Flex>
                         ) : (
-                            <Button onClick={connectWeb3Modal} size="sm">
+                            <Button onClick={handleLogin} size="sm">
                                 Connect Wallet
                             </Button>
                         )}

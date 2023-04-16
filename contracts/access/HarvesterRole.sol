@@ -36,9 +36,9 @@ contract HarvesterRole is Context {
     }
 
     // Define a function 'renounceHarvester' to renounce this role
-    function renounceHarvester() public {
-        _removeHarvester(_msgSender());
-    }
+    // function renounceHarvester() public {
+    //     _removeHarvester(_msgSender());
+    // }
 
     // Define an internal function '_addHarvester' to add this role, called by 'addHarvester'
     function _addHarvester(address account) internal {
@@ -47,20 +47,10 @@ contract HarvesterRole is Context {
     }
 
     // Define an internal function '_removeHarvester' to remove this role, called by 'removeHarvester'
-    function _removeHarvester(address account) internal {
+    function removeHarvester(address account) public onlyHarvester {
         Harvesters.remove(account);
         emit HarvesterRemoved(account);
     }
 
-    // Define a function 'setDistributorRole' to set the distributor role contract address
-    // function setDistributorRole(DistributorRole _distributorRole) external onlyHarvester {
-    //     distributorRole = _distributorRole;
-    // }
-
-    // function addDistributorByHarvester(address account) public onlyHarvester {
-    //     // require(address(distributorRole) != address(0), "DistributorRole contract address not set");
-    //     distributorRole.methodAddDistributor(account);
-    //     emit DistributorAddedByHarvester(_msgSender(), account);
-    // }
 
 }

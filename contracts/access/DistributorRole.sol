@@ -40,9 +40,9 @@ contract DistributorRole is Context {
     // }
 
     // Define a function 'renounceDistributor' to renounce this role
-    function renounceDistributor() public {
-        _removeDistributor(_msgSender());
-    }
+    // function renounceDistributor() public {
+    //     _removeDistributor(_msgSender());
+    // }
 
     // Define an internal function '_addDistributor' to add this role, called by 'addDistributor'
     function _addDistributor(address account) internal {
@@ -51,7 +51,7 @@ contract DistributorRole is Context {
     }
 
     // Define an internal function '_removeDistributor' to remove this role, called by 'removeDistributor'
-    function _removeDistributor(address account) internal {
+    function removeDistributor(address account) public onlyDistributor {
         distributors.remove(account);
         emit DistributorRemoved(account);
     }

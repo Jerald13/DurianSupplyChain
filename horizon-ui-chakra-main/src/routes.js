@@ -1,54 +1,204 @@
 import { Icon } from "@chakra-ui/react"
-import { MdAddCircleOutline } from "react-icons/md"
+import {
+    MdBarChart,
+    MdPerson,
+    MdHome,
+    MdLock,
+    MdOutlineShoppingCart,
+    MdAddCircleOutline,
+    MdLocalFlorist,
+    MdMonetizationOn,
+    MdShoppingCart,
+    MdLocalShipping,
+    MdLocalGroceryStore,
+    MdCheckCircle,
+    MdShoppingBasket,
+    MdStar,
+    MdLocalDining,
+} from "react-icons/md"
+import NFTMarketplace from "views/admin/marketplace"
 import React, { useEffect, useState } from "react"
-import AddHarvester from "views/Harvester/addHarvester"
+import AddHarvester from "views/Harvester/ManageHarvester"
+import AddDistributor from "views/Harvester/ManageDistributor"
+import AddRetailer from "views/Harvester/ManageRetailer"
+
 import HarvestDurian from "views/Harvester/harvestDurian"
-import Web3 from "web3"
-// Auth Imports
-import SignInCentered from "views/auth/signIn"
-import { Route, Redirect } from "react-router-dom"
+import DisplayDurian from "views/Harvester/DisplayDurian"
 
-const web3 = new Web3(Web3.givenProvider)
-const contractAbi = require("../src/contracts/durianSupplyChain.json").abi
-const { DurianSupplyChain: contractAddress } = require("../src/contracts/contract-address.json")
-
-const contract = new web3.eth.Contract(contractAbi, contractAddress)
-
-const accessLevels = {
-    OWNER: 0,
-    HARVESTER: 1,
-    DISTRIBUTOR: 2,
-    RETAILER: 3,
-    CUSTOMER: 4,
-}
-
-let owner
-let harvester
+import CustomerPurchase from "views/Harvester/CustomerPurchase"
+import ManageOwner from "views/Harvester/ManageOwner"
 
 let routes = [
     {
-        name: "Add Harvester",
+        name: "Manage Owner",
         layout: "/admin",
-        path: "/Add-Harvester",
+        path: "/ManageOwner",
         icon: <Icon as={MdAddCircleOutline} width="20px" height="20px" color="inherit" />,
+        component: ManageOwner,
         ownerUser: "Owner",
         authenticate: "Owner",
     },
     {
-        name: "Add Distributor",
+        name: "Manage Harveste Role",
         layout: "/admin",
-        path: "/Harvest-durian",
+        path: "/ManageHarvester",
         icon: <Icon as={MdAddCircleOutline} width="20px" height="20px" color="inherit" />,
+        component: AddHarvester,
         ownerUser: "Owner",
         authenticate: "Harvester",
     },
     {
-        name: "Add DistributorAAASDSDDS",
+        name: "Manage Distributor Role",
         layout: "/admin",
-        path: "/Harvest-durian",
+        path: "/ManageDistributor",
         icon: <Icon as={MdAddCircleOutline} width="20px" height="20px" color="inherit" />,
+        component: AddDistributor,
+        ownerUser: "Owner",
+        authenticate: "Distributor",
+    },
+    {
+        name: "Manage Retailer Role",
+        layout: "/admin",
+        path: "/ManageRetailer",
+        icon: <Icon as={MdAddCircleOutline} width="20px" height="20px" color="inherit" />,
+        component: AddRetailer,
         ownerUser: "Owner",
         authenticate: "Retailer",
+    },
+    {
+        name: "Harvester Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdLocalFlorist} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Display Durian Data",
+        layout: "/admin",
+        path: "/DisplayDurian",
+        icon: <Icon as={MdLocalDining} width="20px" height="20px" color="inherit" />,
+        component: DisplayDurian,
+        ownerUser: "Owner",
+        authenticate: "Customer",
+    },
+    {
+        name: "Harvester Sale Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdMonetizationOn} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Distributor Purchase Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdShoppingCart} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Harvester Shipped Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdLocalShipping} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Distributor Received Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdCheckCircle} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Distributor Processed Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdShoppingBasket} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Distributor Sale Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdMonetizationOn} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Retailer Purchase Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdShoppingCart} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Distributor Shipped Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdLocalShipping} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Retailer Received Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdCheckCircle} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Retailer Sale Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdMonetizationOn} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Customer Purchase Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdShoppingCart} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Customer Rate Durian",
+        layout: "/admin",
+        path: "/harvester-default",
+        icon: <Icon as={MdStar} width="20px" height="20px" color="inherit" />,
+        component: HarvestDurian,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
+    },
+    {
+        name: "Customer Purchase Durian",
+        layout: "/admin",
+        path: "/CustomerPurchase",
+        icon: <Icon as={MdShoppingCart} width="20px" height="20px" color="inherit" />,
+        component: CustomerPurchase,
+        ownerUser: "Owner",
+        authenticate: "Customer",
     },
 ]
 console.log(routes)
