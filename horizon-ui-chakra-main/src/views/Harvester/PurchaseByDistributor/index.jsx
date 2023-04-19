@@ -14,60 +14,67 @@ import {
     useColorModeValue,
     Select,
     SimpleGrid,
+    Spinner,
 } from "@chakra-ui/react"
 
+// Custom components
+import Banner from "views/admin/marketplace/components/Banner"
+import TableTopCreators from "views/admin/marketplace/components/TableTopCreators"
+import HistoryItem from "views/admin/marketplace/components/HistoryItem"
+import NFT from "components/card/NFT"
 import Card from "components/card/Card.js"
-
+import Web3Modal from "web3modal"
 import Web3 from "web3"
-import { toast } from "react-toastify"
 
-const web3 = new Web3(Web3.givenProvider)
-const contractAbi = require("../../../contracts/durianSupplyChain.json").abi
-const { DurianSupplyChain: contractAddress } = require("../../../contracts/contract-address.json")
-const contract = new web3.eth.Contract(contractAbi, contractAddress)
+import { ToastContainer, toast } from "react-toastify"
 export default function Marketplace() {
     // Chakra Color Mode
     const textColor = useColorModeValue("secondaryGray.900", "white")
     const textColorBrand = useColorModeValue("brand.500", "white")
-
-    // Initialize state variables
-    const [durianId, setDurianId] = useState(0)
     const [harvesterAddress, setHarvesterAddress] = useState("")
-    const [durianType, setDurianType] = useState("")
-    const [durianWeight, setDurianWeight] = useState(0)
+    const [checkHarvesterAddress, setCheckHarvesterAddress] = useState("")
+    const [removeHarvesterAddress, setRemoveHarvesterAddress] = useState("")
 
-    // Update state variables on input change
-    const handleDurianIdChange = (event) => {
-        setDurianId(event.target.value)
-    }
+    const [checkProcessing, checkIsProcessing] = useState(false)
 
-    const handleHarvesterAddressChange = (event) => {
-        setHarvesterAddress(event.target.value)
-    }
+    const web3 = new Web3(Web3.givenProvider)
+    const contractAbi = require("../../../contracts/durianSupplyChain.json").abi
+    const {
+        DurianSupplyChain: contractAddress,
+    } = require("../../../contracts/contract-address.json")
+    const contract = new web3.eth.Contract(contractAbi, contractAddress)
+    // State for distributor address input
+    const [isAuthorized, setIsAuthorized] = useState(false) // add a state for authorization status
 
-    const handleDurianTypeChange = (event) => {
-        setDurianType(event.target.value)
-    }
+    useEffect(() => {
+        // check if user is authorized
 
-    const handleDurianWeightChange = (event) => {
-        setDurianWeight(event.target.value)
-    }
+        async function checkAuthorization() {
+            const walletAddress = sessionStorage.getItem("walletAddress")
+            const owner = await contract.methods.owner().call()
+            const distributor = await contract.methods.isHarvester(walletAddress).call()
 
-    // Log state variables on form submit
+            if (walletAddress === owner || distributor) {
+                setIsAuthorized(true)
+            }
+        }
+
+        checkAuthorization()
+    }, [contract.methods])
+
+    // Function to handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault()
-        console.log("Durian ID:", durianId)
-        console.log("Harvester Address:", harvesterAddress)
-        console.log("Durian Type:", durianType)
-        console.log("Durian Weight:", durianWeight)
+        console.log(harvesterAddress)
+        console.log(contract)
 
         try {
             await contract.methods
-                .produceDurianByHarvester(durianId, durianWeight, durianType, harvesterAddress)
+                .purchaseDurianByDistributor(harvesterAddress)
                 .send({ from: sessionStorage.getItem("walletAddress") })
 
             // Display success message
-            toast.success("Harvest Durian Added Succesfully!")
+            toast.success("Distributor Purchase successfully!")
             console.log("CHECK")
         } catch (error) {
             console.error(error)
@@ -75,83 +82,50 @@ export default function Marketplace() {
         }
     }
 
+  
+ 
+
     return (
         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
-            <SimpleGrid columns={1} spacing={6}>
-                <Card>
-                    <Box p="6">
-                        <Box textAlign="center">
-                            <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Durian Form
-                            </Text>
+            {isAuthorized ? (
+                <SimpleGrid columns={1} spacing={6}>
+                    <Card>
+                        <Box p="6">
+                            <Box textAlign="center">
+                                <Text fontSize="xl" fontWeight="bold" color={textColor}>
+                                    Add Distributor Address
+                                </Text>
+                            </Box>
+                            <Box my={4} textAlign="left">
+                                <SimpleGrid columns={2} spacing={3}>
+                                    <FormControl>
+                                        <FormLabel htmlFor="harvesterId" color={textColor}>
+                                            Distributor Address
+                                        </FormLabel>
+                                        <Input
+                                            id="HarvesterAddress"
+                                            placeholder="Enter Distributor Address"
+                                            colorScheme="white"
+                                            color={textColor}
+                                            value={harvesterAddress}
+                                            onChange={(e) => setHarvesterAddress(e.target.value)}
+                                        />
+                                    </FormControl>
+                                </SimpleGrid>
+                                <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
+                                    Add Distributor
+                                </Button>
+                            </Box>
                         </Box>
-                        <Box my={4} textAlign="left">
-                            <SimpleGrid columns={2} spacing={3}>
-                                <FormControl>
-                                    <FormLabel htmlFor="durianId" color={textColor}>
-                                        Durian ID
-                                    </FormLabel>
-                                    <Input
-                                        id="durianId"
-                                        placeholder="Enter Durian ID"
-                                        colorScheme="white"
-                                        color={textColor}
-                                        value={durianId}
-                                        type="number"
-                                        min="0"
-                                        onChange={handleDurianIdChange}
-                                    />
-                                </FormControl>
+                    </Card>
 
-                                <FormControl>
-                                    <FormLabel htmlFor="harvesterAddress" color={textColor}>
-                                        Harvester Address
-                                    </FormLabel>
-                                    <Input
-                                        id="harvesterAddress"
-                                        placeholder="Enter Harvester Address"
-                                        colorScheme="white"
-                                        color={textColor}
-                                        value={harvesterAddress}
-                                        onChange={handleHarvesterAddressChange}
-                                    />
-                                </FormControl>
-                                <FormControl mb={4}>
-                                    <FormLabel color={textColor}>Durian Type</FormLabel>
-                                    <Select
-                                        placeholder="Select Durian Type"
-                                        color={textColor}
-                                        value={durianType}
-                                        onChange={handleDurianTypeChange}
-                                    >
-                                        <option value="musang king">Musang King</option>
-                                        <option value="d24">D24</option>
-                                        <option value="black thorn">Black Thorn</option>
-                                    </Select>
-                                </FormControl>
-                                <FormControl>
-                                    <FormLabel htmlFor="durianWeight" color={textColor}>
-                                        Durian Weight
-                                    </FormLabel>
-                                    <Input
-                                        id="durianWeight"
-                                        placeholder="Enter Durian Weight"
-                                        colorScheme="white"
-                                        color={textColor}
-                                        type="number"
-                                        min="0"
-                                        value={durianWeight}
-                                        onChange={handleDurianWeightChange}
-                                    />
-                                </FormControl>
-                            </SimpleGrid>
-                            <Button mt={4} colorScheme="blue" type="submit" onClick={handleSubmit}>
-                                Submit
-                            </Button>
-                        </Box>
-                    </Box>
-                </Card>
-            </SimpleGrid>
+                  
+
+                
+                </SimpleGrid>
+            ) : (
+                <Text>Not Authorized</Text>
+            )}
         </Box>
     )
 }
