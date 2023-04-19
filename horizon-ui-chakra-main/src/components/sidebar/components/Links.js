@@ -55,12 +55,15 @@ export function SidebarLinks(props) {
                 const owner = await contract.methods.isOwner(currentAccount).call()
                 const harvester = await contract.methods.isHarvester(currentAccount).call()
                 const retailer = await contract.methods.isRetailer(currentAccount).call()
+                const distributor = await contract.methods.isDistributor(currentAccount).call()
 
                 if (owner) {
                     setIsAcc("Owner")
                     console.log(owner)
                 } else if (harvester) {
                     setIsAcc("Harvester")
+                } else if (distributor) {
+                    setIsAcc("Distributor")
                 } else if (retailer) {
                     setIsAcc("Retailer")
                 } else {

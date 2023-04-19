@@ -28,6 +28,8 @@ import DisplayDurian from "views/Harvester/DisplayDurian"
 import CustomerPurchase from "views/Harvester/CustomerPurchase"
 import ManageOwner from "views/Harvester/ManageOwner"
 
+import PurchasedByDistributor from "views/Harvester/PurchasedByDistributor"
+
 let routes = [
     {
         name: "Manage Owner",
@@ -95,11 +97,11 @@ let routes = [
     {
         name: "Distributor Purchase Durian",
         layout: "/admin",
-        path: "/harvester-default",
+        path: "/",
         icon: <Icon as={MdShoppingCart} width="20px" height="20px" color="inherit" />,
-        component: HarvestDurian,
+        component: PurchasedByDistributor,
         ownerUser: "Owner",
-        authenticate: "Harvester",
+        authenticate: "Distributor",
     },
     {
         name: "Harvester Shipped Durian",
