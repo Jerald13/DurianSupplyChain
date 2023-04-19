@@ -1,95 +1,109 @@
+/* eslint-disable */
 import React, { useEffect, useState } from "react"
 import { NavLink, useLocation, useHistory } from "react-router-dom"
+// chakra imports
 import { Box, Flex, HStack, Text, useColorModeValue } from "@chakra-ui/react"
 import { getAuthenticatedRoutes } from "../../../routes.js"
-import Web3 from "web3"
 import Web3Modal from "web3modal"
-
+import Web3 from "web3"
 export function SidebarLinks(props) {
-    const location = useLocation()
-    const activeColor = useColorModeValue("gray.700", "white")
-    const inactiveColor = useColorModeValue("secondaryGray.600", "secondaryGray.600")
-    const activeIcon = useColorModeValue("brand.500", "white")
-    const textColor = useColorModeValue("secondaryGray.500", "white")
-    const brandColor = useColorModeValue("brand.500", "brand.400")
-    const { routes, currentAccountNow } = props
-    const [authenticated, setAuthenticated] = useState(false)
-    const [filteredRoutes, setFilteredRoutes] = useState([])
-    const [isOwner, setIsOwner] = useState(false)
-    const [currentAccount, setCurrentAccount] = useState("")
+    //   Chakra color mode
+    let location = useLocation()
+    let activeColor = useColorModeValue("gray.700", "white")
+    let inactiveColor = useColorModeValue("secondaryGray.600", "secondaryGray.600")
+    let activeIcon = useColorModeValue("brand.500", "white")
+    let textColor = useColorModeValue("secondaryGray.500", "white")
+    let brandColor = useColorModeValue("brand.500", "brand.400")
     const [acc, setIsAcc] = useState(null)
-    const web3 = new Web3(Web3.givenProvider)
     const history = useHistory()
+    const { routes } = props
 
+    const activeRoute = (routeName) => {
+        return location.pathname.includes(routeName)
+    }
+
+    const web3 = new Web3(Web3.givenProvider)
     const contractAbi = require("../../../contracts/durianSupplyChain.json").abi
     const {
         DurianSupplyChain: contractAddress,
     } = require("../../../contracts/contract-address.json")
     const contract = new web3.eth.Contract(contractAbi, contractAddress)
-    const activeRoute = (routeName) => {
-        return location.pathname.includes(routeName)
-    }
+    const [currentAccount, setCurrentAccount] = useState("")
+    const [authenticated, setAuthenticated] = useState(false)
+    const [filteredRoutes, setFilteredRoutes] = useState([])
+
+    const [accountChanged, setAccountChanged] = useState(false)
+
     useEffect(() => {
-        const sessionExists = sessionStorage.getItem("walletAddress")
-        
-        if (sessionExists) {
-            setCurrentAccount(sessionStorage.getItem("walletAddress"))
+        const isUserAuthenticated = sessionStorage.getItem("walletAddress")
+        if (isUserAuthenticated) {
+            setCurrentAccount(isUserAuthenticated)
         }
-        // Use Web3Modal to connect to the user's wallet
+        setAuthenticated(Boolean(isUserAuthenticated))
+        checkIsOwner()
+
         const web3Modal = new Web3Modal()
         web3Modal.connect().then((provider) => {
             const web3 = new Web3(provider)
-            setCurrentAccount(web3.eth.defaultAccount)
+            const account = web3.eth.defaultAccount
+            if (account !== currentAccount) {
+                setCurrentAccount(account)
+                setAccountChanged(true)
+            }
         })
 
-        // Listen for account changes
         window.ethereum.on("accountsChanged", (accounts) => {
-            setCurrentAccount(accounts[0])
+            const account = accounts[0]
+            if (account !== currentAccount) {
+                setCurrentAccount(account)
+                setAccountChanged(true)
+            }
         })
     }, [])
 
-    // Add a useEffect hook to update the authenticated state when the user logs in
     useEffect(() => {
-        async function checkIsOwner() {
-            if (currentAccount) {
-                const owner = await contract.methods.isOwner(currentAccount).call()
-                const harvester = await contract.methods.isHarvester(currentAccount).call()
-                const retailer = await contract.methods.isRetailer(currentAccount).call()
-                const distributor = await contract.methods.isDistributor(currentAccount).call()
-
-                if (owner) {
-                    setIsAcc("Owner")
-                    console.log(owner)
-                } else if (harvester) {
-                    setIsAcc("Harvester")
-                } else if (distributor) {
-                    setIsAcc("Distributor")
-                } else if (retailer) {
-                    setIsAcc("Retailer")
-                } else {
-                    setIsAcc("Customer")
-                }
-                console.log("hi"+acc )
-            }
-        }
-
-        if (currentAccount) {
-            setAuthenticated(true)
+        const isUserAuthenticated = sessionStorage.getItem("walletAddress")
+        if (isUserAuthenticated) {
+            setCurrentAccount(isUserAuthenticated)
             checkIsOwner()
-        } else {
-            setAuthenticated(false)
         }
     }, [currentAccount])
+
+    useEffect(() => {
+        if (accountChanged) {
+            checkIsOwner()
+            setAccountChanged(false)
+        }
+    }, [accountChanged])
+    async function checkIsOwner() {
+        console.log(contract)
+        if (sessionStorage.getItem("walletAddress") !== "") {
+            const owner = await contract.methods.isOwner(currentAccount).call()
+            const harvester = await contract.methods.isHarvester(currentAccount).call()
+            const retailer = await contract.methods.isRetailer(currentAccount).call()
+            const distributor = await contract.methods.isDistributor(currentAccount).call()
+
+            if (owner) {
+                setIsAcc("Owner")
+                console.log(owner)
+            } else if (harvester) {
+                setIsAcc("Harvester")
+            } else if (distributor) {
+                setIsAcc("Distributor")
+            } else if (retailer) {
+                setIsAcc("Retailer")
+            } else {
+                setIsAcc("Customer")
+            }
+        }
+    }
 
     // Add another useEffect hook to update the filteredRoutes array whenever the routes or authenticated state changes
     useEffect(() => {
         setFilteredRoutes(
             routes.filter((route) => {
                 if (route.authenticate) {
-                    console.log(acc + "WHT")
                     console.log(contract)
-                    history.push("/admin/CustomerPurchase")
-
                     if (route.ownerUser === acc) {
                         return authenticated
                     } else if (route.authenticate === acc) {
@@ -102,7 +116,7 @@ export function SidebarLinks(props) {
                 }
             })
         )
-    }, [routes, authenticated, acc, currentAccount])
+    }, [routes, currentAccount, authenticated, acc])
 
     // console.log("HEREEAAA")
     // const filteredRoutes = routes.filter((route) => route.authenticate)
