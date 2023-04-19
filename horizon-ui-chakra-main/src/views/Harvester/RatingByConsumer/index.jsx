@@ -65,15 +65,15 @@ export default function Marketplace() {
     // Function to handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault()
-      
+        console.log(harvesterAddress)
         console.log(contract)
-        const durian = await contract.methods.fetchDurianBufferOne(harvesterAddress).call()
+      
         console.log(durian.durianCurrentPriceState)
         try {
             await contract.methods
-                .purchaseDurianByDistributor(harvesterAddress)
+                .rateDurianFromConsumer(harvesterAddress)
           
-                .send({ from: sessionStorage.getItem("walletAddress"), value: durian.durianCurrentPriceState}) 
+                .send({ from: sessionStorage.getItem("walletAddress")}) 
 
             // Display success message
             toast.success("Distributor Purchase successfully!")
@@ -95,7 +95,7 @@ export default function Marketplace() {
                         <Box p="6">
                             <Box textAlign="center">
                                 <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                    Purchase Durian :purchase by distributor
+                                    Purchase Durian :rating by consumer
                                 </Text>
                             </Box>
                             <Box my={4} textAlign="left">

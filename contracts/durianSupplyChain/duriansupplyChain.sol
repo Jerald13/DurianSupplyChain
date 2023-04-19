@@ -17,8 +17,8 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     enum State {
         ProduceByHarvester, // 0
         ForSaleByHarvester, // 1
-        PurchasedByDistributor, // 2
-        ShippedByHarvester, // 3
+        PurchasedByDistributor, // 2 done
+        ShippedByHarvester, // 3 done
         ReceivedByDistributor, // 4
         ProcessedByDistributor, // 5
         // PackageByDistributor, // 6
@@ -70,8 +70,8 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
 
     event ProduceByHarvester(uint256 durianCode); //1
     event ForSaleByHarvester(uint256 durianCode); //2
-    event PurchasedByDistributor(uint256 durianCode); //3
-    event ShippedByHarvester(uint256 durianCode); //4
+    event PurchasedByDistributor(uint256 durianCode); //3 done
+    event ShippedByHarvester(uint256 durianCode); //4 done
     event ReceivedByDistributor(uint256 durianCode); //5
     event ProcessedByDistributor(uint256 durianCode); //6
     // event PackagedByDistributor(uint256 durianCode); //7

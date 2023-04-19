@@ -43,6 +43,8 @@ async function main() {
         rsaddress: rs.address,
     })
 
+
+    
     console.log(
         "ConsumerRole deployed to:",
         dn.address,

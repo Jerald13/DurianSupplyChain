@@ -31,6 +31,7 @@ export function SidebarLinks(props) {
     }
     useEffect(() => {
         const sessionExists = sessionStorage.getItem("walletAddress")
+        
         if (sessionExists) {
             setCurrentAccount(sessionStorage.getItem("walletAddress"))
         }
@@ -68,6 +69,7 @@ export function SidebarLinks(props) {
                 } else {
                     setIsAcc("Customer")
                 }
+                console.log("hi"+acc )
             }
         }
 
