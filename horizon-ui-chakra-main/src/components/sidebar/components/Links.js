@@ -33,19 +33,18 @@ export function SidebarLinks(props) {
         const sessionExists = sessionStorage.getItem("walletAddress")
         if (sessionExists) {
             setCurrentAccount(sessionStorage.getItem("walletAddress"))
-        } else {
-            // Use Web3Modal to connect to the user's wallet
-            const web3Modal = new Web3Modal()
-            web3Modal.connect().then((provider) => {
-                const web3 = new Web3(provider)
-                setCurrentAccount(web3.eth.defaultAccount)
-            })
-
-            // Listen for account changes
-            window.ethereum.on("accountsChanged", (accounts) => {
-                setCurrentAccount(accounts[0])
-            })
         }
+        // Use Web3Modal to connect to the user's wallet
+        const web3Modal = new Web3Modal()
+        web3Modal.connect().then((provider) => {
+            const web3 = new Web3(provider)
+            setCurrentAccount(web3.eth.defaultAccount)
+        })
+
+        // Listen for account changes
+        window.ethereum.on("accountsChanged", (accounts) => {
+            setCurrentAccount(accounts[0])
+        })
     }, [])
 
     // Add a useEffect hook to update the authenticated state when the user logs in
