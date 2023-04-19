@@ -108,7 +108,7 @@ let routes = [
     {
         name: "Harvester Shipped Durian",
         layout: "/admin",
-        path: "/harvester-default",
+        path: "/ShippedByHarvester",
         icon: <Icon as={MdLocalShipping} width="20px" height="20px" color="inherit" />,
         component: HarvestDurian,
         ownerUser: "Owner",
