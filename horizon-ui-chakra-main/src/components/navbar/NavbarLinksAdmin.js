@@ -166,6 +166,7 @@ function App(props) {
         setIsConnected(true)
         console.log(isConnected)
     }
+
     useEffect(() => {
         connectWeb3Modal()
     }, [isConnected])

@@ -23,6 +23,8 @@ import AddDistributor from "views/Harvester/ManageDistributor"
 import AddRetailer from "views/Harvester/ManageRetailer"
 
 import HarvestDurian from "views/Harvester/harvestDurian"
+import HarvestSale from "views/Harvester/harvestSale"
+
 import DisplayDurian from "views/Harvester/DisplayDurian"
 
 import CustomerPurchase from "views/Harvester/CustomerPurchase"
@@ -86,9 +88,9 @@ let routes = [
     {
         name: "Harvester Sale Durian",
         layout: "/admin",
-        path: "/harvester-default",
+        path: "/harvesterSale",
         icon: <Icon as={MdMonetizationOn} width="20px" height="20px" color="inherit" />,
-        component: HarvestDurian,
+        component: HarvestSale,
         ownerUser: "Owner",
         authenticate: "Harvester",
     },
