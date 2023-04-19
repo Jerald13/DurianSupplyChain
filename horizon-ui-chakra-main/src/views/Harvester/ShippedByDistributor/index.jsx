@@ -68,7 +68,7 @@ export default function Marketplace() {
         console.log(harvesterAddress)
         console.log(contract)
       
-        console.log(durian.durianCurrentPriceState)
+      
         try {
             await contract.methods
                 .shippedDurianByDistributor(harvesterAddress)
