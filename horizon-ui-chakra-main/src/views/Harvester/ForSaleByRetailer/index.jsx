@@ -14,57 +14,40 @@ import {
     useColorModeValue,
     Select,
     SimpleGrid,
-    Spinner,
 } from "@chakra-ui/react"
 
-// Custom components
-import Banner from "views/admin/marketplace/components/Banner"
-import TableTopCreators from "views/admin/marketplace/components/TableTopCreators"
-import HistoryItem from "views/admin/marketplace/components/HistoryItem"
-import NFT from "components/card/NFT"
 import Card from "components/card/Card.js"
-import Web3Modal from "web3modal"
-import Web3 from "web3"
 
-import { ToastContainer, toast } from "react-toastify"
+import Web3 from "web3"
+import { toast } from "react-toastify"
+
+const web3 = new Web3(Web3.givenProvider)
+const contractAbi = require("../../../contracts/durianSupplyChain.json").abi
+const { DurianSupplyChain: contractAddress } = require("../../../contracts/contract-address.json")
+const contract = new web3.eth.Contract(contractAbi, contractAddress)
 export default function Marketplace() {
     // Chakra Color Mode
     const textColor = useColorModeValue("secondaryGray.900", "white")
     const textColorBrand = useColorModeValue("brand.500", "white")
-    const [harvesterAddress, setHarvesterAddress] = useState("")
-    const [checkHarvesterAddress, setCheckHarvesterAddress] = useState("")
-    const [removeHarvesterAddress, setRemoveHarvesterAddress] = useState("")
 
-    const [checkProcessing, checkIsProcessing] = useState(false)
+    // Initialize state variables
+    const [durianId, setDurianId] = useState(0)
+    const [durianPrice, setDurianPrice] = useState("")
+  
+    // Update state variables on input change
+    const handleDurianIdChange = (event) => {
+        setDurianId(event.target.value)
+    }
 
-    const web3 = new Web3(Web3.givenProvider)
-    const contractAbi = require("../../../contracts/durianSupplyChain.json").abi
-    const {
-        DurianSupplyChain: contractAddress,
-    } = require("../../../contracts/contract-address.json")
-    const contract = new web3.eth.Contract(contractAbi, contractAddress)
-    // State for distributor address input
-    const [isAuthorized, setIsAuthorized] = useState(false) // add a state for authorization status
+    const handleDurianPriceChange = (event) => {
+        setDurianPrice(event.target.value)
+    }
 
-    useEffect(() => {
-        // check if user is authorized
 
-        async function checkAuthorization() {
-            const walletAddress = sessionStorage.getItem("walletAddress")
-            const owner = await contract.methods.owner().call()
-            const distributor = await contract.methods.isHarvester(walletAddress).call()
-
-            if (walletAddress === owner || distributor) {
-                setIsAuthorized(true)
-            }
-        }
-
-        checkAuthorization()
-    }, [contract.methods])
-
-    // Function to handle form submission
+    // Log state variables on form submit
     const handleSubmit = async (event) => {
         event.preventDefault()
+<<<<<<< HEAD
         console.log(harvesterAddress)
         console.log(contract)
 
@@ -72,10 +55,17 @@ export default function Marketplace() {
             await contract.methods
                 .sellDurianByRetailer(harvesterAddress)
 
+=======
+    
+
+        try {
+            await contract.methods
+                .sellDurianByRetailer(durianId, durianPrice)
+>>>>>>> cae2e81be7f5b5f094bbeeddbbae5593df8d31a9
                 .send({ from: sessionStorage.getItem("walletAddress") })
 
             // Display success message
-            toast.success("Distributor Purchase successfully!")
+            toast.success("Harvest Durian Added Succesfully!")
             console.log("CHECK")
         } catch (error) {
             console.error(error)
@@ -90,12 +80,17 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
+<<<<<<< HEAD
                                 Purchase Durian :for sale by retailer
+=======
+                                Durian Form
+>>>>>>> cae2e81be7f5b5f094bbeeddbbae5593df8d31a9
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">
                             <SimpleGrid columns={2} spacing={3}>
                                 <FormControl>
+<<<<<<< HEAD
                                     <FormLabel htmlFor="harvesterId" color={textColor}>
                                         Durian ID
                                     </FormLabel>
@@ -111,6 +106,40 @@ export default function Marketplace() {
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
                                 Purchase Durian
+=======
+                                    <FormLabel htmlFor="durianId" color={textColor}>
+                                        Durian ID
+                                    </FormLabel>
+                                    <Input
+                                        id="durianId"
+                                        placeholder="Enter Durian ID"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={durianId}
+                                        type="number"
+                                        min="0"
+                                        onChange={handleDurianIdChange}
+                                    />
+                                </FormControl>
+
+                                <FormControl>
+                                    <FormLabel htmlFor="durianPrice" color={textColor}>
+                                        Durian Price
+                                    </FormLabel>
+                                    <Input
+                                        id="durianPrice"
+                                        placeholder="Enter Durian price"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={durianPrice}
+                                        onChange={handleDurianPriceChange}
+                                    />
+                                </FormControl>
+                              
+                            </SimpleGrid>
+                            <Button mt={4} colorScheme="blue" type="submit" onClick={handleSubmit}>
+                                Submit
+>>>>>>> cae2e81be7f5b5f094bbeeddbbae5593df8d31a9
                             </Button>
                         </Box>
                     </Box>
