@@ -47,7 +47,6 @@ export default function Marketplace() {
     // Log state variables on form submit
     const handleSubmit = async (event) => {
         event.preventDefault()
-<<<<<<< HEAD
         console.log(harvesterAddress)
         console.log(contract)
 
@@ -55,13 +54,6 @@ export default function Marketplace() {
             await contract.methods
                 .sellDurianByRetailer(harvesterAddress)
 
-=======
-    
-
-        try {
-            await contract.methods
-                .sellDurianByRetailer(durianId, durianPrice)
->>>>>>> cae2e81be7f5b5f094bbeeddbbae5593df8d31a9
                 .send({ from: sessionStorage.getItem("walletAddress") })
 
             // Display success message
@@ -80,17 +72,12 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-<<<<<<< HEAD
                                 Purchase Durian :for sale by retailer
-=======
-                                Durian Form
->>>>>>> cae2e81be7f5b5f094bbeeddbbae5593df8d31a9
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">
                             <SimpleGrid columns={2} spacing={3}>
                                 <FormControl>
-<<<<<<< HEAD
                                     <FormLabel htmlFor="harvesterId" color={textColor}>
                                         Durian ID
                                     </FormLabel>
@@ -106,40 +93,6 @@ export default function Marketplace() {
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
                                 Purchase Durian
-=======
-                                    <FormLabel htmlFor="durianId" color={textColor}>
-                                        Durian ID
-                                    </FormLabel>
-                                    <Input
-                                        id="durianId"
-                                        placeholder="Enter Durian ID"
-                                        colorScheme="white"
-                                        color={textColor}
-                                        value={durianId}
-                                        type="number"
-                                        min="0"
-                                        onChange={handleDurianIdChange}
-                                    />
-                                </FormControl>
-
-                                <FormControl>
-                                    <FormLabel htmlFor="durianPrice" color={textColor}>
-                                        Durian Price
-                                    </FormLabel>
-                                    <Input
-                                        id="durianPrice"
-                                        placeholder="Enter Durian price"
-                                        colorScheme="white"
-                                        color={textColor}
-                                        value={durianPrice}
-                                        onChange={handleDurianPriceChange}
-                                    />
-                                </FormControl>
-                              
-                            </SimpleGrid>
-                            <Button mt={4} colorScheme="blue" type="submit" onClick={handleSubmit}>
-                                Submit
->>>>>>> cae2e81be7f5b5f094bbeeddbbae5593df8d31a9
                             </Button>
                         </Box>
                     </Box>

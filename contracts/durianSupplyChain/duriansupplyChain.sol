@@ -14,6 +14,8 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
 
     mapping(uint256 => Txblocks) duriansHistory;
 
+    uint256 public stockUnit = 0;
+
     enum State {
         ProduceByHarvester, // 0
         ForSaleByHarvester, // 1
@@ -273,7 +275,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         duriansHistory[_durianCode] = txBlock;
 
         // Increment stockUnit
-        // stockUnit = stockUnit + 1;
+        stockUnit = stockUnit + 1;
 
         // Emit the appropriate event
         emit ProduceByHarvester(_durianCode);
@@ -566,41 +568,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
             return 0;
         }
     }
-
-    // Define a function 'fetchDurianBufferTwo' that fetches the data
-    // function fetchDurianBufferTwo(uint256 _durianCode)
-    //     public
-    //     view
-    //     returns (
-    //         uint256 durianToCode,
-    //         uint256 durianID,
-    //         string memory durianNotes,
-    //         uint256 durianPrice,
-    //         uint256 durianDate,
-    //         string memory durianType,
-    //         uint256 durianQuantity,
-    //         State durianState,
-    //         address distributorID,
-    //         address retailerID,
-    //         address consumerID
-
-    //     )
-    // {
-    //     // Assign values to the 9 parameters
-    //     durian memory Durian = durians[_durianCode];
-
-    //     return (
-    //         Durian.durianCode,
-    //         Durian.retailerDurianPrice,
-    //         Durian.consumerBoughtTime;,
-    //         Durian.durianType,
-    //         Durian.durianQuantity,
-    //         Durian.durianState,
-    //         Durian.distributorID,
-    //         Durian.retailerID,
-    //         Durian.consumerID
-    //     );
-    // }
 
     // Define a function 'fetchDurianHistory' that fetaches the data
     function fetchDurianHistory(

@@ -67,12 +67,7 @@ export default function Marketplace() {
         event.preventDefault()
         console.log(harvesterAddress)
         console.log(contract)
-<<<<<<< HEAD
 
-=======
-      
-      
->>>>>>> cae2e81be7f5b5f094bbeeddbbae5593df8d31a9
         try {
             await contract.methods
                 .shippedDurianByDistributor(harvesterAddress)

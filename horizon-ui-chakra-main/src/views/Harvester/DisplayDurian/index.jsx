@@ -15,8 +15,13 @@ import {
     Select,
     SimpleGrid,
     Spinner,
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
 } from "@chakra-ui/react"
-
 // Custom components
 import Banner from "views/admin/marketplace/components/Banner"
 import TableTopCreators from "views/admin/marketplace/components/TableTopCreators"
@@ -49,6 +54,41 @@ export default function Marketplace() {
     const [foundDurianData, setFoundDurianData] = useState(null) // add state for found durian data
     const [acc, setAcc] = useState("")
 
+    const [durians, setDurians] = useState([])
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                // Get the number of durians in the mapping
+                const count = await contract.methods.stockUnit().call()
+
+                // Loop through all the durians in the mapping and get their data
+                const durianData = []
+                for (let i = 1; i <= count; i++) {
+                    const bufferOne = await contract.methods.fetchDurianBufferOne(i).call()
+
+                    // Combine the data from the two buffers into a single object
+                    const durian = {
+                        id: i,
+                        name: bufferOne.HarvestLocationAddress,
+                        type: bufferOne.durianType,
+                        status: bufferOne.durianState,
+                    }
+
+                    // Add the durian data to the array
+                    durianData.push(durian)
+                }
+
+                // Update the state with the durian data
+                setDurians(durianData)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        fetchData()
+    }, [])
+
     useEffect(() => {
         // check if user is authorized
 
@@ -69,7 +109,7 @@ export default function Marketplace() {
         const durian = await contract.methods.fetchDurianBufferOne(checkHarvesterAddress).call()
         await checkIsOwner()
         const durianData = {
-            "Durian ID": checkHarvesterAddress,
+            "Durian ID": durian.durianToCode,
             "Owner ID": `${acc} : ` + durian.ownerID,
             "Harvest Location Address": durian.HarvestLocationAddress,
             "Durian Type": durian.durianType,
@@ -78,7 +118,6 @@ export default function Marketplace() {
                 durian.durianCurrentPriceState,
             "Harvested Time": new Date(durian.harvestedTime * 1000).toLocaleString(),
         }
-        console.log(durianData)
         if (durian != null) {
             setFoundDurianData(durianData) // update found durian data state
             toast.success(`Found`, {
@@ -153,6 +192,7 @@ export default function Marketplace() {
                     </Box>
                 </Card>
             </SimpleGrid>
+
             {foundDurianData && (
                 <Card mt={4}>
                     <Box p="6">
@@ -172,6 +212,33 @@ export default function Marketplace() {
                     </Box>
                 </Card>
             )}
+
+            <Card marginTop="4">
+                <Box>
+                    <Table>
+                        <Thead>
+                            <Tr>
+                                <Th>Durian ID</Th>
+                                <Th>Durian Name</Th>
+                                <Th>Durian Type</Th>
+                                <Th>Durian Price</Th>
+                                <Th>Durian Status</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {durians.map((durian) => (
+                                <Tr key={durian.id}>
+                                    <Td>{durian.id}</Td>
+                                    <Td>{durian.name}</Td>
+                                    <Td>{durian.type}</Td>
+                                    <Td>{durian.price}</Td>
+                                    <Td>{durian.status}</Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Box>
+            </Card>
         </Box>
     )
 }
