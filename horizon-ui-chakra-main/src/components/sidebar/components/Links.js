@@ -40,7 +40,6 @@ export function SidebarLinks(props) {
             setCurrentAccount(isUserAuthenticated)
         }
         setAuthenticated(Boolean(isUserAuthenticated))
-        checkIsOwner()
 
         const web3Modal = new Web3Modal()
         web3Modal.connect().then((provider) => {
@@ -113,6 +112,7 @@ export function SidebarLinks(props) {
                     } else if (route.authenticate === "Customer") {
                         return true // include the route without any conditions
                     }
+                    history.push("/admin/CustomerPurchase")
                 }
             })
         )
