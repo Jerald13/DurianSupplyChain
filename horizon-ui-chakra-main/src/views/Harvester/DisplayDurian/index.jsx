@@ -21,6 +21,7 @@ import {
     Tr,
     Th,
     Td,
+    Progress,
 } from "@chakra-ui/react"
 // Custom components
 import Banner from "views/admin/marketplace/components/Banner"
@@ -28,9 +29,10 @@ import TableTopCreators from "views/admin/marketplace/components/TableTopCreator
 import HistoryItem from "views/admin/marketplace/components/HistoryItem"
 import NFT from "components/card/NFT"
 import Card from "components/card/Card.js"
+import ProgressBar from "components/ProgressBar/ProgressBar.js"
+
 import Web3Modal from "web3modal"
 import Web3 from "web3"
-
 import { ToastContainer, toast } from "react-toastify"
 export default function Marketplace() {
     // Chakra Color Mode
@@ -41,7 +43,9 @@ export default function Marketplace() {
     const [removeHarvesterAddress, setRemoveHarvesterAddress] = useState("")
 
     const [checkProcessing, checkIsProcessing] = useState(false)
-    const [durianData, setdurianData] = useState("")
+
+    const [progress, setProgress] = useState(0)
+    const [status, setStatus] = useState("Preparing for shipment")
 
     const web3 = new Web3(Web3.givenProvider)
     const contractAbi = require("../../../contracts/durianSupplyChain.json").abi
@@ -55,24 +59,30 @@ export default function Marketplace() {
     const [acc, setAcc] = useState("")
 
     const [durians, setDurians] = useState([])
-
+    const [durianCodes, setDurianCodes] = useState([])
     useEffect(() => {
         async function fetchData() {
             try {
                 // Get the number of durians in the mapping
                 const count = await contract.methods.stockUnit().call()
-
+                const durianCodes = await contract.methods.getAllDurianCodes().call()
                 // Loop through all the durians in the mapping and get their data
                 const durianData = []
-                for (let i = 1; i <= count; i++) {
-                    const bufferOne = await contract.methods.fetchDurianBufferOne(i).call()
+                for (let i = 0; i < count; i++) {
+                    const bufferOne = await contract.methods
+                        .fetchDurianBufferOne(durianCodes[i])
+                        .call()
 
+                    const statusCurrentName = handleUpdateStatus(bufferOne.durianState)
                     // Combine the data from the two buffers into a single object
+                    var digit = Number(bufferOne.durianState)
                     const durian = {
                         id: i,
                         name: bufferOne.HarvestLocationAddress,
                         type: bufferOne.durianType,
+                        statusPercentage: (digit + 1) * 7.7,
                         status: bufferOne.durianState,
+                        statusName: statusCurrentName,
                     }
 
                     // Add the durian data to the array
@@ -105,17 +115,47 @@ export default function Marketplace() {
         checkAuthorization()
     }, [contract.methods])
 
+    function handleUpdateStatus(progress) {
+        if (progress == 0) {
+            return "Produce by Harvester"
+        } else if (progress == 1) {
+            return "For sale by harvester"
+        } else if (progress == 2) {
+            return "Purchase by distributor"
+        } else if (progress == 3) {
+            return "Shipped by harvester"
+        } else if (progress == 4) {
+            return "ReceivedByDistributor"
+        } else if (progress == 5) {
+            return "ProcessedByDistributor"
+        } else if (progress == 6) {
+            return "ForSaleByDistributor"
+        } else if (progress == 7) {
+            return "PurchasedByRetailer"
+        } else if (progress == 8) {
+            return "ShippedByDistributor"
+        } else if (progress == 9) {
+            return "ReceivedByRetailer"
+        } else if (progress == 10) {
+            return "ForSaleByRetailer"
+        } else if (progress == 11) {
+            return "PurchasedByConsumer"
+        } else if (progress == 12) {
+            return "RatingByConsumer"
+        }
+    }
+
     const handleCheckSubmit = async () => {
         const durian = await contract.methods.fetchDurianBufferOne(checkHarvesterAddress).call()
-        await checkIsOwner()
+        const ownerDurian = await checkIsOwner(durian.ownerID)
         const durianData = {
             "Durian ID": durian.durianToCode,
-            "Owner ID": `${acc} : ` + durian.ownerID,
+            "Owner ID": `${ownerDurian} : ` + durian.ownerID,
             "Harvest Location Address": durian.HarvestLocationAddress,
             "Durian Type": durian.durianType,
             "Durian State": durian.durianState,
             "Durian Current Price State (Durian Weight * 0.005 ether)":
-                durian.durianCurrentPriceState,
+                web3.utils.fromWei(durian.durianCurrentPriceState, "ether") + "ETH",
             "Harvested Time": new Date(durian.harvestedTime * 1000).toLocaleString(),
         }
         if (durian != null) {
@@ -133,27 +173,21 @@ export default function Marketplace() {
         }
     }
 
-    async function checkIsOwner() {
+    async function checkIsOwner(ownerId) {
         console.log(contract)
         if (checkHarvesterAddress !== "") {
-            const owner = await contract.methods
-                .isOwner(sessionStorage.getItem("walletAddress"))
-                .call()
-            const harvester = await contract.methods
-                .isHarvester(sessionStorage.getItem("walletAddress"))
-                .call()
-            const retailer = await contract.methods
-                .isRetailer(sessionStorage.getItem("walletAddress"))
-                .call()
+            const owner = await contract.methods.isOwner(ownerId).call()
+            const harvester = await contract.methods.isHarvester(ownerId).call()
+            const retailer = await contract.methods.isRetailer(ownerId).call()
             console.log(retailer)
             if (owner) {
-                setAcc("Owner")
+                return "Owner"
             } else if (harvester) {
-                setAcc("Harvester")
+                return "Harvester"
             } else if (retailer) {
-                setAcc("Retailer")
+                return "Retailer"
             } else {
-                setAcc("User")
+                return "User"
             }
         }
     }
@@ -233,6 +267,15 @@ export default function Marketplace() {
                                     <Td>{durian.type}</Td>
                                     <Td>{durian.price}</Td>
                                     <Td>{durian.status}</Td>
+                                    <Td>
+                                        <Box maxW="xl" mx="auto" mt={8}>
+                                            <ProgressBar
+                                                progress={durian.statusPercentage}
+                                                status={durian.statusName}
+                                            />
+                                            <Text>Status: {durian.statusName}</Text>
+                                        </Box>
+                                    </Td>
                                 </Tr>
                             ))}
                         </Tbody>

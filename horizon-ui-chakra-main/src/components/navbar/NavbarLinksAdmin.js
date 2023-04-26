@@ -80,11 +80,7 @@ function App(props) {
     }, [])
 
     const connectWeb3Modal = async () => {
-        console.log(isConnected + " Wgatus ")
-
         if (window.ethereum && isConnected) {
-            console.log("WJAT")
-
             const web3 = new Web3(window.ethereum)
             try {
                 await window.ethereum.enable()
@@ -111,8 +107,6 @@ function App(props) {
     }
 
     async function checkIsOwner() {
-        console.log(currentAccount + "AASX")
-
         if (currentAccount !== "") {
             const owner = await contract.methods.isOwner(currentAccount).call()
             const harvester = await contract.methods.isHarvester(currentAccount).call()
@@ -160,11 +154,13 @@ function App(props) {
         setWeb3Instance(null)
 
         history.push("/admin/CustomerPurchase")
+        window.location.reload()
     }
 
     const handleLogin = async () => {
-        setIsConnected(true)
-        console.log(isConnected)
+        await setIsConnected(true)
+        await checkIsOwner()
+        setTimeout(() => window.location.reload(), 1000)
     }
 
     useEffect(() => {

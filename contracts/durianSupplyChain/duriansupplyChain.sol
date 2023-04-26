@@ -37,10 +37,11 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
 
     State constant defaultState = State.ProduceByHarvester;
 
+    uint256[] public durianCodeArray;
+
     // Define a struct 'durian' with the following fields:
     struct durian {
         address ownerID;
-        uint256 id;
         uint256 durianCode;
         uint256 durianWeight;
         string durianType;
@@ -256,7 +257,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         address distributorID;
         address retailerID;
         address consumerID;
-
         durian memory newProduce;
         newProduce.ownerID = _msgSender();
         newProduce.durianCode = _durianCode;
@@ -265,7 +265,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         newProduce.durianType = _durianType;
         newProduce.harvestLocationAddress = _harvestLocationAddress;
         newProduce.harvestedTime = block.timestamp;
-        newProduce.id = stockUnit;
         newProduce.harvestedDurianPrice = _durianWeight * 0.005 ether;
         newProduce.durianState = defaultState;
         newProduce.distributorID = distributorID;
@@ -278,6 +277,8 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         txBlock.DTR = placeholder;
         txBlock.RTC = placeholder;
         duriansHistory[_durianCode] = txBlock;
+
+        durianCodeArray.push(_durianCode);
 
         // Increment stockUnit
         stockUnit = stockUnit + 1;
@@ -538,7 +539,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         public
         view
         returns (
-            uint256 id,
+            uint256 durianToCode,
             address ownerID,
             uint8 taste,
             uint8 condition,
@@ -550,7 +551,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         // Assign values to the 8 parameters
         durian memory Durian = durians[_durianCode];
         return (
-            Durian.id,
+            Durian.durianCode,
             Durian.ownerID,
             Durian.taste,
             Durian.condition,
@@ -616,5 +617,13 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
 
     function getStockUnit() public view returns (uint256) {
         return stockUnit;
+    }
+
+    function getAllDurianCodes() public view returns (uint256[] memory) {
+        uint256[] memory codes = new uint256[](durianCodeArray.length);
+        for (uint i = 0; i < durianCodeArray.length; i++) {
+            codes[i] = durianCodeArray[i];
+        }
+        return codes;
     }
 }
