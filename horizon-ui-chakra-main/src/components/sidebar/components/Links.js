@@ -63,8 +63,8 @@ export function SidebarLinks(props) {
     useEffect(() => {
         const isUserAuthenticated = sessionStorage.getItem("walletAddress")
         if (isUserAuthenticated) {
-            setCurrentAccount(isUserAuthenticated)
             checkIsOwner()
+            setAccountChanged(false)
         }
     }, [currentAccount])
 
@@ -73,7 +73,7 @@ export function SidebarLinks(props) {
             checkIsOwner()
             setAccountChanged(false)
         }
-    }, [accountChanged])
+    }, [accountChanged, currentAccount])
     async function checkIsOwner() {
         console.log(contract)
         if (sessionStorage.getItem("walletAddress") !== "") {
