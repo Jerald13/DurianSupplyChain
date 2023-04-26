@@ -10,17 +10,19 @@ import "../access/ConsumerRole.sol";
 contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, ConsumerRole {
     address public owner;
 
+    HarvesterRole harvesterRole;
+
+    uint256 public stockUnit = 0;
+
     mapping(uint256 => durian) durians;
 
     mapping(uint256 => Txblocks) duriansHistory;
 
-    uint256 public stockUnit = 0;
-
     enum State {
         ProduceByHarvester, // 0
         ForSaleByHarvester, // 1
-        PurchasedByDistributor, // 2 done
-        ShippedByHarvester, // 3 done
+        PurchasedByDistributor, // 2
+        ShippedByHarvester, // 3
         ReceivedByDistributor, // 4
         ProcessedByDistributor, // 5
         // PackageByDistributor, // 6
@@ -38,6 +40,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     // Define a struct 'durian' with the following fields:
     struct durian {
         address ownerID;
+        uint256 id;
         uint256 durianCode;
         uint256 durianWeight;
         string durianType;
@@ -72,8 +75,8 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
 
     event ProduceByHarvester(uint256 durianCode); //1
     event ForSaleByHarvester(uint256 durianCode); //2
-    event PurchasedByDistributor(uint256 durianCode); //3 done
-    event ShippedByHarvester(uint256 durianCode); //4 done
+    event PurchasedByDistributor(uint256 durianCode); //3
+    event ShippedByHarvester(uint256 durianCode); //4
     event ReceivedByDistributor(uint256 durianCode); //5
     event ProcessedByDistributor(uint256 durianCode); //6
     // event PackagedByDistributor(uint256 durianCode); //7
@@ -253,6 +256,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         address distributorID;
         address retailerID;
         address consumerID;
+
         durian memory newProduce;
         newProduce.ownerID = _msgSender();
         newProduce.durianCode = _durianCode;
@@ -261,6 +265,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         newProduce.durianType = _durianType;
         newProduce.harvestLocationAddress = _harvestLocationAddress;
         newProduce.harvestedTime = block.timestamp;
+        newProduce.id = stockUnit;
         newProduce.harvestedDurianPrice = _durianWeight * 0.005 ether;
         newProduce.durianState = defaultState;
         newProduce.distributorID = distributorID;
@@ -458,7 +463,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     )
         public
         payable
-        onlyConsumer
+        // onlyConsumer
         forSaleByRetailer(_durianCode)
         paidEnough(durians[_durianCode].retailerDurianPrice)
         checkValue(durians[_durianCode].retailerDurianPrice, payable(_msgSender()))
@@ -483,8 +488,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         uint8 _ripeness
     )
         public
-        payable
-        onlyConsumer
+        // onlyConsumer
         purchasedByConsumer(_durianCode)
         verifyCaller(durians[_durianCode].ownerID)
     {
@@ -534,7 +538,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         public
         view
         returns (
-            uint256 durianToCode,
+            uint256 id,
             address ownerID,
             uint8 taste,
             uint8 condition,
@@ -546,7 +550,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         // Assign values to the 8 parameters
         durian memory Durian = durians[_durianCode];
         return (
-            Durian.durianCode,
+            Durian.id,
             Durian.ownerID,
             Durian.taste,
             Durian.condition,
@@ -608,5 +612,9 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
 
     function isOwner(address _owner) public view returns (bool) {
         return owner == _owner;
+    }
+
+    function getStockUnit() public view returns (uint256) {
+        return stockUnit;
     }
 }
