@@ -22,6 +22,7 @@ import {
     Th,
     Td,
     Progress,
+    Checkbox,
 } from "@chakra-ui/react"
 // Custom components
 import Banner from "views/admin/marketplace/components/Banner"
@@ -192,6 +193,19 @@ export default function Marketplace() {
         }
     }
 
+    const [checkboxes, setCheckboxes] = useState([
+        { id: 1, label: "Checkbox 1", checked: false },
+        { id: 2, label: "Checkbox 2", checked: true },
+        { id: 3, label: "Checkbox 3", checked: false },
+    ])
+
+    const handleCheckboxChange = (index) => {
+        const newCheckboxes = [...checkboxes]
+        newCheckboxes[index].checked = !newCheckboxes[index].checked
+        setCheckboxes(newCheckboxes)
+        console.log(checkboxes)
+    }
+
     return (
         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
             <SimpleGrid columns={1} spacing={6}>
@@ -252,6 +266,7 @@ export default function Marketplace() {
                     <Table>
                         <Thead>
                             <Tr>
+                                <Th>Select</Th>
                                 <Th>Durian ID</Th>
                                 <Th>Durian Name</Th>
                                 <Th>Durian Type</Th>
@@ -262,6 +277,20 @@ export default function Marketplace() {
                         <Tbody>
                             {durians.map((durian) => (
                                 <Tr key={durian.id}>
+                                    <Td>
+                                        <>
+                                            {checkboxes.map((checkbox, index) => (
+                                                <Checkbox
+                                                    key={checkbox.id}
+                                                    isChecked={checkbox.checked}
+                                                    onChange={() => handleCheckboxChange(index)}
+                                                >
+                                                    {checkbox.label}
+                                                </Checkbox>
+                                            ))}
+                                        </>
+                                    </Td>
+
                                     <Td>{durian.id}</Td>
                                     <Td>{durian.name}</Td>
                                     <Td>{durian.type}</Td>
