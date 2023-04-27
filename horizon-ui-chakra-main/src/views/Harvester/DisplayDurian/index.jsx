@@ -30,7 +30,7 @@ import TableTopCreators from "views/admin/marketplace/components/TableTopCreator
 import HistoryItem from "views/admin/marketplace/components/HistoryItem"
 import NFT from "components/card/NFT"
 import Card from "components/card/Card.js"
-import ProgressBar from "components/ProgressBar/ProgressBar.js"
+import ProgressBar from "components/progressBar/ProgressBar.js"
 
 import Web3Modal from "web3modal"
 import Web3 from "web3"
@@ -302,7 +302,7 @@ export default function Marketplace() {
                                                 progress={durian.statusPercentage}
                                                 status={durian.statusName}
                                             />
-                                            <Text>Status: {durian.statusName}</Text>
+                                      
                                         </Box>
                                     </Td>
                                 </Tr>
