@@ -242,8 +242,9 @@ export default function Marketplace() {
                                     <Td>
                                         <Checkbox
                                             key={durian.durianCode}
-                                            value={durian.durianCode}                                     
-                                            onChange={handleCheckboxChange}>
+                                            value={durian.durianCode}
+                                            onChange={handleCheckboxChange}
+                                        >
                                             {durian.durianCode}
                                         </Checkbox>
                                     </Td>

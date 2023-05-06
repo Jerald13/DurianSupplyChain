@@ -25,7 +25,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         ShippedByHarvester, // 3
         ReceivedByDistributor, // 4
         ProcessedByDistributor, // 5
-        // PackageByDistributor, // 6
         ForSaleByDistributor, // 7
         PurchasedByRetailer, // 8
         ShippedByDistributor, // 9
@@ -48,7 +47,8 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         uint256 harvestedDurianPrice;
         address harvesterID;
         uint256 harvestedTime;
-        string harvestLocationAddress;
+        uint256 treeId;
+        string farmName;
         State durianState;
         address distributorID;
         uint256 distributedDurianPrice;
@@ -74,13 +74,13 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         uint256 RTC; // blockRetailerToConsumer
     }
 
+    //Before this Process, Kindly add Farm and Tree First
     event ProduceByHarvester(uint256 durianCode); //1
     event ForSaleByHarvester(uint256 durianCode); //2
     event PurchasedByDistributor(uint256 durianCode); //3
     event ShippedByHarvester(uint256 durianCode); //4
     event ReceivedByDistributor(uint256 durianCode); //5
     event ProcessedByDistributor(uint256 durianCode); //6
-    // event PackagedByDistributor(uint256 durianCode); //7
     event ForSaleByDistributor(uint256 durianCode); //8
     event PurchasedByRetailer(uint256 durianCode); //9
     event ShippedByDistributor(uint256 durianCode); //10
@@ -147,11 +147,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         );
         _;
     }
-
-    // modifier packagedByDistributor(uint256 _durianCode) {
-    //     require(durians[_durianCode].durianState == State.PackageByDistributor, "Durian is not in the PackageByDistributor state.");
-    //     _;
-    // }
 
     modifier forSaleByDistributor(uint256 _durianCode) {
         require(
@@ -233,7 +228,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
 
     constructor() payable {
         owner = _msgSender();
-        // durianCode = 1;
     }
 
     function _make_payable(address x) internal pure returns (address payable) {
@@ -247,13 +241,88 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         }
     }
 
+    //Add Display Farm & Tree Site***************************************
+
+    struct Tree {
+        uint256 treeId;
+    }
+
+    struct FarmStruct {
+        uint256 farmId;
+        string farmName;
+        Tree[] trees;
+    }
+
+    mapping(uint256 => FarmStruct) farms;
+    uint256 public farmCount;
+
+    function addFarm(string memory _farmName) public onlyHarvester {
+        for (uint256 i = 1; i <= farmCount; i++) {
+            require(
+                keccak256(bytes(farms[i].farmName)) != keccak256(bytes(_farmName)),
+                "Farm already exists"
+            );
+        }
+        uint256 newFarm = farmCount += 1;
+        FarmStruct storage farm = farms[newFarm];
+        farm.farmName = _farmName;
+        farm.farmId = farmCount;
+    }
+
+    function addTree(uint256 _farmId, uint256 _treeId) public onlyHarvester {
+        require(farms[_farmId].farmId != 0, "Farm does not exist");
+
+        FarmStruct storage farm = farms[_farmId];
+
+        for (uint256 i = 0; i < farm.trees.length; i++) {
+            require(farm.trees[i].treeId != _treeId, "Tree already exists in the farm");
+        }
+
+        farm.trees.push(Tree(_treeId));
+    }
+
+    function getFarmTreeCount(uint256 _farmId) public view returns (uint256) {
+        FarmStruct storage farm = farms[_farmId];
+        return farm.trees.length;
+    }
+
+    // function getAllFarmTrees(
+    //     uint256 _farmId
+    // ) public view returns (string memory, uint256[] memory) {
+    //     FarmStruct storage farm = farms[_farmId];
+    //     uint256[] memory treeIndices = new uint256[](farm.trees.length);
+    //     for (uint256 i = 0; i < farm.trees.length; i++) {
+    //         treeIndices[i] = farm.trees[i].treeId;
+    //     }
+    //     return (farm.farmName, treeIndices);
+    // }
+
+    function getAllFarmTrees(
+        uint256 _farmId
+    ) public view returns (string memory, uint256[] memory) {
+        FarmStruct storage farm = farms[_farmId];
+        uint256[] memory treeIndices = new uint256[](farm.trees.length);
+        for (uint256 i = 0; i < farm.trees.length; i++) {
+            treeIndices[i] = farm.trees[i].treeId;
+        }
+        return (farm.farmName, treeIndices);
+    }
+
+    //***************************************
+
     // 1st step in supply chain process
     function produceDurianByHarvester(
         uint256 _durianCode,
         uint256 _durianWeight,
         string memory _durianType,
-        string memory _harvestLocationAddress
+        uint256 _farmId,
+        uint256 _treeId
     ) public onlyHarvester {
+        FarmStruct storage farm = farms[_farmId];
+        for (uint256 i = 0; i < farm.trees.length; i++) {
+            require(farm.trees[i].treeId != _treeId, "Tree already exists in the farm");
+        }
+
         address distributorID;
         address retailerID;
         address consumerID;
@@ -263,7 +332,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         newProduce.harvesterID = _msgSender();
         newProduce.durianWeight = _durianWeight;
         newProduce.durianType = _durianType;
-        newProduce.harvestLocationAddress = _harvestLocationAddress;
+        newProduce.treeId = _treeId;
         newProduce.harvestedTime = block.timestamp;
         newProduce.harvestedDurianPrice = _durianWeight * 0.005 ether;
         newProduce.durianState = defaultState;
@@ -369,17 +438,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         durians[_durianCode].durianState = State.ProcessedByDistributor;
         emit ProcessedByDistributor(_durianCode);
     }
-
-    // 7th step in supply chain process
-    // function packageDurianByDistributor(uint256 _durianCode)
-    //     public
-    //     onlyDistributor // check _msgSender() belongs to DistributorRole
-    //     processByDistributor(_durianCode)
-    //     verifyCaller(durians[_durianCode].ownerID) // check _msgSender() is owner
-    // {
-    //     durians[_durianCode].durianState = State.PackageByDistributor;
-    //     emit PackagedByDistributor(_durianCode);
-    // }
 
     // 8th step in supply chain process
     function sellDurianByDistributor(
@@ -511,48 +569,87 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         returns (
             uint256 durianToCode,
             address ownerID,
-            string memory HarvestLocationAddress,
-            uint256 harvestedTime,
+            uint256 durianWeight,
+            string memory durianType,
             State durianState,
-            uint256 durianCurrentPriceState,
-            string memory durianType
+            uint256 treeId,
+            string memory farmName
         )
     {
         // Assign values to the 8 parameters
         durian memory Durian = durians[_durianCode];
-        uint256 durianCurrentPrice = displayCurrentPrice(_durianCode);
         return (
             Durian.durianCode,
             Durian.ownerID,
-            Durian.harvestLocationAddress,
-            Durian.harvestedTime,
+            Durian.durianWeight,
+            Durian.durianType,
             Durian.durianState,
-            durianCurrentPrice,
-            Durian.durianType
+            Durian.treeId,
+            Durian.farmName
         );
     }
 
-    // Define a function 'fetchDurianBufferTwo' that fetches the data
     function fetchDurianBufferTwo(
         uint256 _durianCode
     )
         public
         view
         returns (
-            uint256 durianToCode,
-            address ownerID,
-            uint8 taste,
-            uint8 condition,
-            uint8 fragrance,
-            uint8 creaminess,
-            uint8 ripeness
+            address harvesterID,
+            uint256 harvestedTime,
+            address distributorID,
+            uint256 distributedDurianPrice,
+            uint256 distributedTime,
+            address retailerID,
+            uint256 retailedTime
         )
     {
         // Assign values to the 8 parameters
         durian memory Durian = durians[_durianCode];
         return (
-            Durian.durianCode,
-            Durian.ownerID,
+            Durian.harvesterID,
+            Durian.harvestedTime,
+            Durian.distributorID,
+            Durian.distributedDurianPrice,
+            Durian.distributedTime,
+            Durian.retailerID,
+            Durian.retailedTime
+        );
+    }
+
+    function fetchDurianBufferThree(
+        uint256 _durianCode
+    )
+        public
+        view
+        returns (
+            address consumerID,
+            uint256 consumerBoughtTime,
+            bool packaging,
+            uint256 piecesFlesh
+        )
+    {
+        // Assign values to the 8 parameters
+        durian memory Durian = durians[_durianCode];
+        return (
+            Durian.consumerID,
+            Durian.consumerBoughtTime,
+            Durian.packaging,
+            Durian.piecesFlesh
+        );
+    }
+
+    // Define a function 'fetchDurianBufferTwo' that fetches the data
+    function fetchDurianBufferFour(
+        uint256 _durianCode
+    )
+        public
+        view
+        returns (uint8 taste, uint8 condition, uint8 fragrance, uint8 creaminess, uint8 ripeness)
+    {
+        // Assign values to the 8 parameters
+        durian memory Durian = durians[_durianCode];
+        return (
             Durian.taste,
             Durian.condition,
             Durian.fragrance,

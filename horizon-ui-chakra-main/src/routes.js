@@ -22,6 +22,8 @@ import AddHarvester from "views/Harvester/ManageHarvester"
 import AddDistributor from "views/Harvester/ManageDistributor"
 import AddRetailer from "views/Harvester/ManageRetailer"
 
+import HarvestFarmTree from "views/Harvester/HavesterFarmTree"
+
 import HarvestDurian from "views/Harvester/harvestDurian"
 import HarvestSale from "views/Harvester/harvestSale"
 
@@ -29,7 +31,6 @@ import DisplayDurian from "views/Harvester/DisplayDurian"
 
 import CustomerPurchase from "views/Harvester/CustomerPurchase"
 import ManageOwner from "views/Harvester/ManageOwner"
-
 
 import PurchasedByDistributor from "views/Harvester/PurchaseByDistributor"
 import ShippedByHarvester from "views/Harvester/ShippedByHarvester"
@@ -79,6 +80,15 @@ let routes = [
         component: AddRetailer,
         ownerUser: "Owner",
         authenticate: "Retailer",
+    },
+    {
+        name: "Harvester Farm & Tree",
+        layout: "/admin",
+        path: "/HarvesterFarmTree",
+        icon: <Icon as={MdLocalFlorist} width="20px" height="20px" color="inherit" />,
+        component: HarvestFarmTree,
+        ownerUser: "Owner",
+        authenticate: "Harvester",
     },
     {
         name: "Harvester Durian",

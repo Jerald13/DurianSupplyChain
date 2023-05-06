@@ -35,6 +35,44 @@ export default function Marketplace() {
     const [harvesterAddress, setHarvesterAddress] = useState("")
     const [durianType, setDurianType] = useState("")
     const [durianWeight, setDurianWeight] = useState(0)
+    const [durians, setDurians] = useState([])
+    const [farmName, setFarmName] = useState(0)
+    const [treeId, setTreeId] = useState(0)
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    async function fetchData() {
+        try {
+            // Get the number of durians in the mapping
+            const count = await contract.methods.farmCount().call()
+            console.log(count)
+
+            // Loop through all the durians in the mapping and get their data
+            const durianData = []
+            for (let i = 1; i <= count; i++) {
+                const result = await contract.methods.getAllFarmTrees(i).call()
+                const farmName = result[0]
+                const treeIndices = result[1]
+
+                const durian = {
+                    id: i,
+                    farmName: farmName,
+                    treeIndices: treeIndices,
+                }
+                console.log(i)
+
+                // Add the durian data to the array
+                durianData.push(durian)
+            }
+
+            // Update the state with the durian data
+            setDurians(durianData)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     // Update state variables on input change
     const handleDurianIdChange = (event) => {
@@ -63,7 +101,7 @@ export default function Marketplace() {
 
         try {
             await contract.methods
-                .produceDurianByHarvester(durianId, durianWeight, durianType, harvesterAddress)
+                .produceDurianByHarvester(durianId, durianWeight, durianType, farmName, treeId)
                 .send({ from: sessionStorage.getItem("walletAddress") })
 
             // Display success message
@@ -104,18 +142,34 @@ export default function Marketplace() {
                                 </FormControl>
 
                                 <FormControl>
-                                    <FormLabel htmlFor="harvesterAddress" color={textColor}>
-                                        Harvester Address
+                                    <FormLabel htmlFor="harvesterId" color={textColor}>
+                                        Farm Name
+                                    </FormLabel>
+                                    <Select onChange={(e) => setFarmName(e.target.value)}>
+                                        {durians.map((durian) => (
+                                            <option key={durian.id} value={durian.id}>
+                                                {durian.farmName}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+                                <FormControl>
+                                    <FormLabel htmlFor="TreeID" color={textColor}>
+                                        Tree ID
                                     </FormLabel>
                                     <Input
-                                        id="harvesterAddress"
-                                        placeholder="Enter Harvester Address"
+                                        id="durianWeight"
+                                        placeholder="Enter Tree ID"
                                         colorScheme="white"
                                         color={textColor}
-                                        value={harvesterAddress}
-                                        onChange={handleHarvesterAddressChange}
+                                        type="number"
+                                        min="0"
+                                        value={treeId}
+                                        onChange={(e) => setTreeId(e.target.value)}
                                     />
                                 </FormControl>
+
                                 <FormControl mb={4}>
                                     <FormLabel color={textColor}>Durian Type</FormLabel>
                                     <Select
