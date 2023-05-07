@@ -319,10 +319,10 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         uint256 _treeId
     ) public onlyHarvester {
         FarmStruct storage farm = farms[_farmId];
-        for (uint256 i = 0; i < farm.trees.length; i++) {
-            require(farm.trees[i].treeId != _treeId, "Tree already exists in the farm");
-        }
-
+        // for (uint256 i = 0; i < farm.trees.length; i++) {
+        //     require(farm.trees[i].treeId == _treeId, "Tree already exists in the farm");
+        // }
+        // require(farms[_farmId].farmId != 0, "Farm does not exist");
         address distributorID;
         address retailerID;
         address consumerID;
@@ -333,6 +333,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         newProduce.durianWeight = _durianWeight;
         newProduce.durianType = _durianType;
         newProduce.treeId = _treeId;
+        newProduce.farmName = farm.farmName;
         newProduce.harvestedTime = block.timestamp;
         newProduce.harvestedDurianPrice = _durianWeight * 0.005 ether;
         newProduce.durianState = defaultState;
@@ -523,7 +524,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         public
         payable
         // onlyConsumer
-        forSaleByRetailer(_durianCode)
         paidEnough(durians[_durianCode].retailerDurianPrice)
         checkValue(durians[_durianCode].retailerDurianPrice, payable(_msgSender()))
     {
@@ -548,7 +548,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     )
         public
         // onlyConsumer
-        purchasedByConsumer(_durianCode)
         verifyCaller(durians[_durianCode].ownerID)
     {
         durians[_durianCode].taste = _taste;
@@ -656,19 +655,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
             Durian.creaminess,
             Durian.ripeness
         );
-    }
-
-    function displayCurrentPrice(uint256 _durianCode) public view returns (uint256 durianPrice) {
-        durian memory Durian = durians[_durianCode];
-        if (Durian.retailerDurianPrice != 0) {
-            return Durian.retailerDurianPrice;
-        } else if (Durian.distributedDurianPrice != 0) {
-            return Durian.distributedDurianPrice;
-        } else if (Durian.harvestedDurianPrice != 0) {
-            return Durian.harvestedDurianPrice;
-        } else {
-            return 0;
-        }
     }
 
     // Define a function 'fetchDurianHistory' that fetaches the data

@@ -35,6 +35,10 @@ import ProgressBar from "components/progressBar/ProgressBar.js"
 import Web3Modal from "web3modal"
 import Web3 from "web3"
 import { ToastContainer, toast } from "react-toastify"
+
+import tableDataTopCreators from "views/admin/marketplace/variables/tableDataTopCreators.json"
+import { tableColumnsTopCreators } from "views/admin/marketplace/variables/tableColumnsTopCreators"
+
 export default function Marketplace() {
     // Chakra Color Mode
     const textColor = useColorModeValue("secondaryGray.900", "white")
@@ -58,7 +62,11 @@ export default function Marketplace() {
     const [isAuthorized, setIsAuthorized] = useState(false) // add a state for authorization status
     const [foundDurianData, setFoundDurianData] = useState(null)
     const [acc, setAcc] = useState("")
+    const [dropdownVisible, setDropdownVisible] = useState(false)
 
+    const toggleDropdown = () => {
+        setDropdownVisible(!dropdownVisible)
+    }
     const [durians, setDurians] = useState([])
     const [durianCodes, setDurianCodes] = useState([])
     useEffect(() => {
@@ -86,7 +94,16 @@ export default function Marketplace() {
                     const result = await contract.methods.getAllFarmTrees(i).call()
                     const farmName = result[0]
                     const treeIndices = result[1]
+
                     const statusCurrentName = handleUpdateStatus(bufferOne.durianState)
+
+                    const formattedTimestamp = convertTimestamp(bufferTwo.harvestedTime)
+                    const formattedTimestamp2 = convertTimestamp(bufferTwo.distributedTime)
+
+                    const formattedTimestamp3 = convertTimestamp(bufferTwo.retailedTime)
+
+                    const formattedTimestamp4 = convertTimestamp(bufferThree.consumerBoughtTime)
+
                     // Combine the data from the two buffers into a single object
                     var digit = Number(bufferOne.durianState)
                     const durian = {
@@ -100,24 +117,37 @@ export default function Marketplace() {
                         farmName: bufferOne.farmName,
                         statusName: statusCurrentName,
 
-                        harvesterID: bufferTwo.harvesterID,
-                        harvestedTime: bufferTwo.harvestedTime,
-                        distributorID: bufferTwo.distributorID,
+                        harvesterID:
+                            bufferTwo.harvesterID === "0x0000000000000000000000000000000000000000"
+                                ? "-"
+                                : bufferTwo.harvesterID,
+                        harvestedTime: formattedTimestamp,
+                        distributorID:
+                            bufferTwo.distributorID ===
+                            "0x0000000000000000000000000000000000000000"
+                                ? "-"
+                                : bufferTwo.distributorID,
                         distributedDurianPrice: bufferTwo.distributedDurianPrice,
-                        distributedTime: bufferTwo.distributedTime,
-                        retailerID: bufferTwo.retailerID,
-                        retailedTime: bufferTwo.retailedTime,
+                        distributedTime: formattedTimestamp2,
+                        retailerID:
+                            bufferTwo.retailerID === "0x0000000000000000000000000000000000000000"
+                                ? "-"
+                                : bufferTwo.retailerID,
+                        retailedTime: formattedTimestamp3,
 
-                        consumerID: bufferThree.consumerID,
-                        consumerBoughtTime: bufferThree.consumerBoughtTime,
-                        packaging: bufferThree.packaging,
-                        piecesFlesh: bufferThree.piecesFlesh,
+                        consumerID:
+                            bufferThree.consumerID === "0x0000000000000000000000000000000000000000"
+                                ? "-"
+                                : bufferTwo.consumerID,
+                        consumerBoughtTime: formattedTimestamp4,
+                        packaging: bufferThree.packaging === "" ? bufferFour.packaging : "-",
+                        piecesFlesh: bufferThree.piecesFlesh === 0 ? bufferFour.piecesFlesh : "-",
 
-                        taste: bufferFour.taste,
-                        condition: bufferFour.condition,
-                        fragrance: bufferFour.fragrance,
-                        creaminess: bufferFour.creaminess,
-                        ripeness: bufferFour.ripeness,
+                        taste: bufferFour.taste === 0 ? bufferFour.taste : "-",
+                        condition: bufferFour.condition === 0 ? bufferFour.condition : "-",
+                        fragrance: bufferFour.fragrance === 0 ? bufferFour.fragrance : "-",
+                        creaminess: bufferFour.creaminess === 0 ? bufferFour.creaminess : "-",
+                        ripeness: bufferFour.ripeness === 0 ? bufferFour.ripeness : "-",
                     }
 
                     // Add the durian data to the array
@@ -133,6 +163,11 @@ export default function Marketplace() {
 
         fetchData()
     }, [])
+
+    function convertTimestamp(timestamp) {
+        const date = new Date(timestamp * 1000)
+        return date.toLocaleString()
+    }
 
     useEffect(() => {
         // check if user is authorized
@@ -262,7 +297,6 @@ export default function Marketplace() {
                     </Box>
                 </Card>
             </SimpleGrid>
-
             {foundDurianData && (
                 <Card mt={4}>
                     <Box p="6">
@@ -283,282 +317,742 @@ export default function Marketplace() {
                 </Card>
             )}
 
-            <Card mt={4}>
-                <Box p="6">
-                    {durians.map((durian) => (
-                        <div key={durian.durianToCode}>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian To Code:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.durianToCode}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Owner ID:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.ownerID}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian Weight:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.durianWeight}</Text>
-                            </Flex>
-
-                            <Flex alignItems="center" justifyContent="space-between">
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian StatusPercentage & statusName:
-                                </Text>
-                                <Flex justifyContent="flex-end" mt={4}>
-                                    <Box maxW="xl">
-                                        <ProgressBar
-                                            progress={durian.statusPercentage}
-                                            status={durian.statusName}
-                                        />
-                                    </Box>
-                                </Flex>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian status:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.status}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian statusPercentage:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.statusPercentage}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian durianType:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.durianType}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian treeId:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.treeId}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian farmName:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.farmName}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian statusCurrentName:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.statusCurrentName}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian harvesterID:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.harvesterID}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian harvestedTime:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.harvestedTime}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian distributorID:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.distributorID}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian distributedDurianPrice:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.distributedDurianPrice}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian distributedTime:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.distributedTime}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian distributedDurianPrice:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.distributedDurianPrice}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian retailerID:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.retailerID}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian retailedTime:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.retailedTime}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian consumerID:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.consumerID}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian consumerBoughtTime:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.consumerBoughtTime}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian retailedTime:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.retailedTime}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian packaging:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.packaging || "false"}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian piecesFlesh:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.piecesFlesh}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian taste:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.taste}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian condition:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.condition}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian fragrance:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.fragrance}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian creaminess:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.creaminess}</Text>
-                            </Flex>
-                            <Flex alignItems="center" justifyContent="space-between" mt={2}>
-                                <Text fontWeight="bold" color={textColor}>
-                                    Durian ripeness:
-                                </Text>
-                                <Text color={textColorBrand}>{durian.ripeness}</Text>
-                            </Flex>
-                        </div>
-                    ))}
-                </Box>
-            </Card>
-
-            {/*
-                   
-
-
-
-                        consumerID: bufferThree.consumerID,
-                        consumerBoughtTime: bufferThree.consumerBoughtTime,
-                        packaging: bufferThree.packaging,
-                        piecesFlesh: bufferThree.piecesFlesh,
-
-                        taste: bufferFour.taste,
-                        condition: bufferFour.condition,
-                        fragrance: bufferFour.fragrance,
-                        creaminess: bufferFour.creaminess,
-                        ripeness: bufferFour.ripeness, */}
-
-            <Flex direction="column" gap={4}>
-                {durians.map((durian) => (
-                    <Flex
-                        key={durian.durianToCode}
-                        direction="column"
-                        borderWidth="1px"
-                        p={4}
-                        borderRadius="md"
-                        float="right"
-                    >
-                        <Text fontWeight="bold">Durian Details</Text>
-                        <Text>Durian To Code: {durian.durianToCode}</Text>
-                        <Text>Owner ID: {durian.ownerID}</Text>
-                        <Text>Durian Weight: {durian.durianWeight}</Text>
-                        <Text>Status Percentage: {durian.statusPercentage}</Text>
-                        <Text>Status: {durian.status}</Text>
-                        <Text>Durian Type: {durian.durianType}</Text>
-                        <Text>Tree ID: {durian.treeId}</Text>
-                        <Text>Farm Name: {durian.farmName}</Text>
-                        <Text>Status Name: {durian.statusName}</Text>
-                        <Text>Harvester ID: {durian.harvesterID}</Text>
-                        <Text>Harvested Time: {durian.harvestedTime}</Text>
-                        <Text>Distributor ID: {durian.distributorID}</Text>
-                        <Text>Distributed Durian Price: {durian.distributedDurianPrice}</Text>
-                        <Text>Distributed Time: {durian.distributedTime}</Text>
-                        <Text>Retailer ID: {durian.retailerID}</Text>
-                        <Text>Retailed Time: {durian.retailedTime}</Text>
-                        <Text>Consumer ID: {durian.consumerID}</Text>
-                        <Text>Consumer Bought Time: {durian.consumerBoughtTime}</Text>
-                        <Text>Packaging: {durian.packaging}</Text>
-                        <Text>Pieces Flesh: {durian.piecesFlesh}</Text>
-                        <Text>Taste: {durian.taste}</Text>
-                        <Text>Condition: {durian.condition}</Text>
-                        <Text>Fragrance: {durian.fragrance}</Text>
-                        <Text>Creaminess: {durian.creaminess}</Text>
-                        <Text>Ripeness: {durian.ripeness}</Text>
-                    </Flex>
-                ))}
-            </Flex>
-
-            {/* <Card marginTop="4">
-                <Box>
-                    <Table>
+            <Flex direction="column" w="100%" overflowX={{ sm: "scroll", lg: "hidden" }} mt={10}>
+                <Flex
+                    align={{ sm: "flex-start", lg: "center" }}
+                    justify="space-between"
+                    w="100%"
+                    px="22px"
+                    pb="20px"
+                    mb="10px"
+                    boxShadow="0px 40px 58px -20px rgba(112, 144, 176, 0.26)"
+                >
+                    <Text color={textColor} fontSize="xl" fontWeight="600">
+                        Display All Durian
+                    </Text>
+                    <Button variant="action">See all</Button>
+                </Flex>
+                <Card>
+                    <Table variant="simple" color="gray.500">
                         <Thead>
                             <Tr>
-                                <Th>Select</Th>
-                                <Th>Durian ID</Th>
-                                <Th>Durian Name</Th>
-                                <Th>Durian Type</Th>
-                                <Th>Durian Price</Th>
-                                <Th>Durian Status</Th>
+                                <Th pe="10px" borderColor="transparent">
+                                    <Flex
+                                        justify="space-between"
+                                        align="center"
+                                        fontSize={{ sm: "10px", lg: "12px" }}
+                                        color="gray.400"
+                                    >
+                                        Durian Detail
+                                    </Flex>
+                                </Th>
+
+                                <Th pe="10px" borderColor="transparent">
+                                    <Flex
+                                        justify="space-between"
+                                        align="center"
+                                        fontSize={{ sm: "10px", lg: "12px" }}
+                                        color="gray.400"
+                                    >
+                                        Value
+                                    </Flex>
+                                </Th>
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {durians.map((durian) => (
-                                <Tr key={durian.id}>
-                                    <Td>{durian.durianToCode}</Td>
-                                    <Td>{durian.name}</Td>
-                                    <Td>{durian.type}</Td>
-                                    <Td>{durian.price}</Td>
-                                    <Td>{durian.status}</Td>
-                                    <Td>
-                                        <Box maxW="xl" mx="auto" mt={8}>
-                                            <ProgressBar
-                                                progress={durian.statusPercentage}
-                                                status={durian.statusName}
-                                            />
-                                        </Box>
-                                    </Td>
-                                </Tr>
+                            {durians.map((durian, index) => (
+                                <React.Fragment key={index}>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text fontWeight="bold" color={textColor}>
+                                                    Durian To Code:
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.durianToCode}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To ownerID:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.harvestedTime}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To durianWeight:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.durianWeight}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To Status:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Box maxW="xl">
+                                                    <ProgressBar
+                                                        progress={durian.statusPercentage}
+                                                        status={durian.statusName}
+                                                    />
+                                                </Box>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To durianType:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.durianType}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To harvesterID:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.harvesterID}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To harvestedTime:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.harvestedTime}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To distributorID:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.distributorID}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To distributedDurianPrice:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.distributedDurianPrice === "0"
+                                                        ? "-"
+                                                        : durian.distributedDurianPrice}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To distributedTime:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.distributedTime ===
+                                                    "1/1/1970, 7:30:00 AM"
+                                                        ? "-"
+                                                        : durian.distributedTime}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To retailerID:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.retailerID}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To retailedTime:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.retailedTime === "1/1/1970, 7:30:00 AM"
+                                                        ? "-"
+                                                        : durian.retailedTime}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To consumerID:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.consumerID}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To consumerBoughtTime:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.consumerBoughtTime ===
+                                                    "1/1/1970, 7:30:00 AM"
+                                                        ? "-"
+                                                        : durian.consumerBoughtTime}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To piecesFlesh:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.piecesFlesh === "0"
+                                                        ? "-"
+                                                        : durian.piecesFlesh}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To piecesFlesh:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.piecesFlesh}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To taste:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>{durian.taste}</Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To condition:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.condition}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To fragrance:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.fragrance}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To creaminess:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.creaminess}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>{" "}
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To ripeness:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.ripeness}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                </React.Fragment>
                             ))}
                         </Tbody>
                     </Table>
-                </Box>
-            </Card> */}
+                </Card>
+            </Flex>
         </Box>
     )
 }

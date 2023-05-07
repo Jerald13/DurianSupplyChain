@@ -222,56 +222,6 @@ export default function Marketplace() {
                     </Box>
                 </Card>
             )}
-
-            <Card marginTop="4">
-                <Box>
-                    <Table>
-                        <Thead>
-                            <Tr>
-                                <Th>Select</Th>
-                                <Th>Durian ID</Th>
-                                <Th>Durian Name</Th>
-                                <Th>Durian Type</Th>
-                                <Th>Durian Price</Th>
-                                <Th>Durian Status</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {durians.map((durian) => (
-                                <Tr key={durian.id}>
-                                    <Td>
-                                        <Checkbox
-                                            key={durian.durianCode}
-                                            value={durian.durianCode}
-                                            onChange={handleCheckboxChange}
-                                        >
-                                            {durian.durianCode}
-                                        </Checkbox>
-                                    </Td>
-
-                                    <Td>{durian.durianCode}</Td>
-                                    <Td>{durian.name}</Td>
-                                    <Td>{durian.type}</Td>
-                                    <Td>{durian.price}</Td>
-                                    <Td>{durian.status}</Td>
-                                    <Td>
-                                        <Box maxW="xl" mx="auto" mt={8}>
-                                            <ProgressBar
-                                                progress={durian.statusPercentage}
-                                                status={durian.statusName}
-                                            />
-                                            <Text>Status: {durian.statusName}</Text>
-                                        </Box>
-                                    </Td>
-                                </Tr>
-                            ))}
-                        </Tbody>
-                    </Table>
-                </Box>
-                <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-                    Sell
-                </Button>
-            </Card>
         </Box>
     )
 }

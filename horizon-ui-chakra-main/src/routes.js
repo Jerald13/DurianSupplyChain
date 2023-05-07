@@ -55,7 +55,7 @@ let routes = [
         authenticate: "Owner",
     },
     {
-        name: "Manage Harveste Role",
+        name: "Manage Harvester Role",
         layout: "/admin",
         path: "/ManageHarvester",
         icon: <Icon as={MdAddCircleOutline} width="20px" height="20px" color="inherit" />,
@@ -201,12 +201,13 @@ let routes = [
     {
         name: "Customer Purchase Durian",
         layout: "/admin",
-        path: "/PurchasedByConsumer",
+        path: "/CustomerPurchase",
         icon: <Icon as={MdShoppingCart} width="20px" height="20px" color="inherit" />,
-        component: PurchasedByConsumer,
+        component: CustomerPurchase,
         ownerUser: "Owner",
-        authenticate: "User",
+        authenticate: "Customer",
     },
+
     {
         name: "Customer Rate Durian",
         layout: "/admin",
@@ -215,15 +216,6 @@ let routes = [
         component: RatingByConsumer,
         ownerUser: "Owner",
         authenticate: "Harvester",
-    },
-    {
-        name: "Customer Purchase Durian",
-        layout: "/admin",
-        path: "/CustomerPurchase",
-        icon: <Icon as={MdShoppingCart} width="20px" height="20px" color="inherit" />,
-        component: CustomerPurchase,
-        ownerUser: "Owner",
-        authenticate: "Customer",
     },
 ]
 console.log(routes)

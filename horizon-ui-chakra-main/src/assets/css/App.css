@@ -10,3 +10,13 @@ option {
 g {
     display: none;
 }
+
+.css-c7pw8z {
+    display: none !important;
+}
+
+@media screen and (min-width: 1600px) {
+    .css-ciih4 {
+        grid-template-columns: 1fr 0fr !important;
+    }
+}

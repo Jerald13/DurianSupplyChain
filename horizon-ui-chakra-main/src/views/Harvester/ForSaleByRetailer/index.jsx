@@ -25,6 +25,7 @@ const web3 = new Web3(Web3.givenProvider)
 const contractAbi = require("../../../contracts/durianSupplyChain.json").abi
 const { DurianSupplyChain: contractAddress } = require("../../../contracts/contract-address.json")
 const contract = new web3.eth.Contract(contractAbi, contractAddress)
+
 export default function Marketplace() {
     // Chakra Color Mode
     const textColor = useColorModeValue("secondaryGray.900", "white")
@@ -33,26 +34,14 @@ export default function Marketplace() {
     // Initialize state variables
     const [durianId, setDurianId] = useState(0)
     const [durianPrice, setDurianPrice] = useState("")
-  
-    // Update state variables on input change
-    const handleDurianIdChange = (event) => {
-        setDurianId(event.target.value)
-    }
-
-    const handleDurianPriceChange = (event) => {
-        setDurianPrice(event.target.value)
-    }
-
 
     // Log state variables on form submit
     const handleSubmit = async (event) => {
         event.preventDefault()
-        console.log(harvesterAddress)
-        console.log(contract)
 
         try {
             await contract.methods
-                .sellDurianByRetailer(harvesterAddress)
+                .sellDurianByRetailer(durianId, durianPrice)
 
                 .send({ from: sessionStorage.getItem("walletAddress") })
 
@@ -86,8 +75,21 @@ export default function Marketplace() {
                                         placeholder="Enter Distributor Address"
                                         colorScheme="white"
                                         color={textColor}
-                                        value={harvesterAddress}
-                                        onChange={(e) => setHarvesterAddress(e.target.value)}
+                                        value={durianId}
+                                        onChange={(e) => setDurianId(e.target.value)}
+                                    />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel htmlFor="harvesterId" color={textColor}>
+                                        Durian ID
+                                    </FormLabel>
+                                    <Input
+                                        id="HarvesterAddress"
+                                        placeholder="Enter Distributor Address"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={durianPrice}
+                                        onChange={(e) => setDurianPrice(e.target.value)}
                                     />
                                 </FormControl>
                             </SimpleGrid>
