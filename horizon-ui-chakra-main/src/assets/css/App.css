@@ -20,3 +20,7 @@ g {
         grid-template-columns: 1fr 0fr !important;
     }
 }
+
+.css-ibmtgl {
+    display: none !important;
+}
