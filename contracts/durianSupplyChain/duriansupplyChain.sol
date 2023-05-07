@@ -322,7 +322,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         // for (uint256 i = 0; i < farm.trees.length; i++) {
         //     require(farm.trees[i].treeId == _treeId, "Tree already exists in the farm");
         // }
-        // require(farms[_farmId].farmId != 0, "Farm does not exist");
+        require(farms[_farmId].farmId != 0, "Farm does not exist");
         address distributorID;
         address retailerID;
         address consumerID;
@@ -524,6 +524,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         public
         payable
         // onlyConsumer
+        forSaleByRetailer(_durianCode)
         paidEnough(durians[_durianCode].retailerDurianPrice)
         checkValue(durians[_durianCode].retailerDurianPrice, payable(_msgSender()))
     {
@@ -548,6 +549,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     )
         public
         // onlyConsumer
+        purchasedByConsumer(_durianCode)
         verifyCaller(durians[_durianCode].ownerID)
     {
         durians[_durianCode].taste = _taste;
