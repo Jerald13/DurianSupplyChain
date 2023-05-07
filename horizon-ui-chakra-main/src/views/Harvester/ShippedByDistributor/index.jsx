@@ -90,7 +90,7 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Purchase Durian :Shipped by distributor
+                                Shipped by distributor
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">

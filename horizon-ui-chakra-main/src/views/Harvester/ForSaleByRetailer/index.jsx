@@ -61,7 +61,7 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Purchase Durian :for sale by retailer
+                                Purchase for sale by retailer
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">

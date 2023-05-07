@@ -33,7 +33,7 @@ export default function Marketplace() {
     // Initialize state variables
     const [durianId, setDurianId] = useState(0)
     const [durianSlices, setDurianSlice] = useState("")
-  
+
     // Update state variables on input change
     const handleDurianIdChange = (event) => {
         setDurianId(event.target.value)
@@ -43,11 +43,9 @@ export default function Marketplace() {
         setDurianSlice(event.target.value)
     }
 
-
     // Log state variables on form submit
     const handleSubmit = async (event) => {
         event.preventDefault()
-    
 
         try {
             await contract.methods
@@ -70,7 +68,7 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Durian Form
+                                Distributor Process Durian
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">
@@ -104,7 +102,6 @@ export default function Marketplace() {
                                         onChange={handleDurianSliceChange}
                                     />
                                 </FormControl>
-                              
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" type="submit" onClick={handleSubmit}>
                                 Submit

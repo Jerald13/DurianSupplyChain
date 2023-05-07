@@ -65,15 +65,18 @@ export default function Marketplace() {
     // Function to handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault()
-      
+
         console.log(contract)
         const durian = await contract.methods.fetchDurianBufferOne(harvesterAddress).call()
         console.log(durian.durianCurrentPriceState)
         try {
             await contract.methods
                 .purchaseDurianByDistributor(harvesterAddress)
-          
-                .send({ from: sessionStorage.getItem("walletAddress"), value: durian.durianCurrentPriceState}) 
+
+                .send({
+                    from: sessionStorage.getItem("walletAddress"),
+                    value: durian.durianCurrentPriceState,
+                })
 
             // Display success message
             toast.success("Distributor Purchase successfully!")
@@ -84,49 +87,39 @@ export default function Marketplace() {
         }
     }
 
-  
- 
-
     return (
         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
-            
-                <SimpleGrid columns={1} spacing={6}>
-                    <Card>
-                        <Box p="6">
-                            <Box textAlign="center">
-                                <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                    Purchase Durian :purchase by distributor
-                                </Text>
-                            </Box>
-                            <Box my={4} textAlign="left">
-                                <SimpleGrid columns={2} spacing={3}>
-                                    <FormControl>
-                                        <FormLabel htmlFor="harvesterId" color={textColor}>
-                                          Durian ID
-                                        </FormLabel>
-                                        <Input
-                                            id="HarvesterAddress"
-                                            placeholder="Enter Distributor Address"
-                                            colorScheme="white"
-                                            color={textColor}
-                                            value={harvesterAddress}
-                                            onChange={(e) => setHarvesterAddress(e.target.value)}
-                                        />
-                                    </FormControl>
-                                </SimpleGrid>
-                                <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-                                    Purchase Durian
-                                </Button>
-                            </Box>
+            <SimpleGrid columns={1} spacing={6}>
+                <Card>
+                    <Box p="6">
+                        <Box textAlign="center">
+                            <Text fontSize="xl" fontWeight="bold" color={textColor}>
+                                Purchase by distributor
+                            </Text>
                         </Box>
-                    </Card>
-
-                  
-
-                
-                </SimpleGrid>
-        
-    
+                        <Box my={4} textAlign="left">
+                            <SimpleGrid columns={2} spacing={3}>
+                                <FormControl>
+                                    <FormLabel htmlFor="harvesterId" color={textColor}>
+                                        Durian ID
+                                    </FormLabel>
+                                    <Input
+                                        id="HarvesterAddress"
+                                        placeholder="Enter Distributor Address"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={harvesterAddress}
+                                        onChange={(e) => setHarvesterAddress(e.target.value)}
+                                    />
+                                </FormControl>
+                            </SimpleGrid>
+                            <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
+                                Purchase Durian
+                            </Button>
+                        </Box>
+                    </Box>
+                </Card>
+            </SimpleGrid>
         </Box>
     )
 }

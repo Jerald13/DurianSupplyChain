@@ -67,8 +67,7 @@ export default function Marketplace() {
         event.preventDefault()
         console.log(harvesterAddress)
         console.log(contract)
-     
-      
+
         try {
             await contract.methods
                 .receivedDurianByRetailer(harvesterAddress)
@@ -91,7 +90,7 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Purchase Durian : Received by retailer
+                                Received by retailer
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">

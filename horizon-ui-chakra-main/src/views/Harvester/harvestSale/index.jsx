@@ -176,7 +176,7 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Sell Durian Id
+                                Harvester Sale Durian ID
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">

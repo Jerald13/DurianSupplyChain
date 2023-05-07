@@ -67,13 +67,12 @@ export default function Marketplace() {
         event.preventDefault()
         console.log(harvesterAddress)
         console.log(contract)
-       
-       
+
         try {
             await contract.methods
                 .receivedDurianByDistributor(harvesterAddress)
-          
-                .send({ from: sessionStorage.getItem("walletAddress")}) 
+
+                .send({ from: sessionStorage.getItem("walletAddress") })
 
             // Display success message
             toast.success("Distributor Purchase successfully!")
@@ -84,49 +83,39 @@ export default function Marketplace() {
         }
     }
 
-  
- 
-
     return (
         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
-            
-                <SimpleGrid columns={1} spacing={6}>
-                    <Card>
-                        <Box p="6">
-                            <Box textAlign="center">
-                                <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                    Purchase Durian :Received by distributor
-                                </Text>
-                            </Box>
-                            <Box my={4} textAlign="left">
-                                <SimpleGrid columns={2} spacing={3}>
-                                    <FormControl>
-                                        <FormLabel htmlFor="harvesterId" color={textColor}>
-                                          Durian ID
-                                        </FormLabel>
-                                        <Input
-                                            id="HarvesterAddress"
-                                            placeholder="Enter Distributor Address"
-                                            colorScheme="white"
-                                            color={textColor}
-                                            value={harvesterAddress}
-                                            onChange={(e) => setHarvesterAddress(e.target.value)}
-                                        />
-                                    </FormControl>
-                                </SimpleGrid>
-                                <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-                                    Purchase Durian
-                                </Button>
-                            </Box>
+            <SimpleGrid columns={1} spacing={6}>
+                <Card>
+                    <Box p="6">
+                        <Box textAlign="center">
+                            <Text fontSize="xl" fontWeight="bold" color={textColor}>
+                                Received by distributor
+                            </Text>
                         </Box>
-                    </Card>
-
-                  
-
-                
-                </SimpleGrid>
-        
-    
+                        <Box my={4} textAlign="left">
+                            <SimpleGrid columns={2} spacing={3}>
+                                <FormControl>
+                                    <FormLabel htmlFor="harvesterId" color={textColor}>
+                                        Durian ID
+                                    </FormLabel>
+                                    <Input
+                                        id="HarvesterAddress"
+                                        placeholder="Enter Distributor Address"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={harvesterAddress}
+                                        onChange={(e) => setHarvesterAddress(e.target.value)}
+                                    />
+                                </FormControl>
+                            </SimpleGrid>
+                            <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
+                                Purchase Durian
+                            </Button>
+                        </Box>
+                    </Box>
+                </Card>
+            </SimpleGrid>
         </Box>
     )
 }

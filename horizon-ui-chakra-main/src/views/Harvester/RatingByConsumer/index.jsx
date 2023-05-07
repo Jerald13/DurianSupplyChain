@@ -16,7 +16,7 @@ import {
     SimpleGrid,
     Spinner,
 } from "@chakra-ui/react"
-
+import { Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react"
 // Custom components
 import Banner from "views/admin/marketplace/components/Banner"
 import TableTopCreators from "views/admin/marketplace/components/TableTopCreators"
@@ -45,7 +45,31 @@ export default function Marketplace() {
     const contract = new web3.eth.Contract(contractAbi, contractAddress)
     // State for distributor address input
     const [isAuthorized, setIsAuthorized] = useState(false) // add a state for authorization status
+    const [taste, setTaste] = useState(5)
+    const [condition, setCondition] = useState(5)
+    const [fragrance, setFragrance] = useState(5)
+    const [creaminess, setCreaminess] = useState(5)
+    const [ripeness, setRipeness] = useState(5)
 
+    const handleTasteChange = (value) => {
+        setTaste(value)
+    }
+
+    const handleConditionChange = (value) => {
+        setCondition(value)
+    }
+
+    const handleFragranceChange = (value) => {
+        setFragrance(value)
+    }
+
+    const handleCreaminessChange = (value) => {
+        setCreaminess(value)
+    }
+
+    const handleRipenessChange = (value) => {
+        setRipeness(value)
+    }
     useEffect(() => {
         // check if user is authorized
 
@@ -66,12 +90,18 @@ export default function Marketplace() {
     const handleSubmit = async (event) => {
         event.preventDefault()
         console.log(harvesterAddress)
-        console.log(contract)
+        console.log(taste)
 
         try {
             await contract.methods
-                .rateDurianFromConsumer(harvesterAddress)
-
+                .rateDurianFromConsumer(
+                    harvesterAddress,
+                    taste,
+                    condition,
+                    fragrance,
+                    creaminess,
+                    ripeness
+                )
                 .send({ from: sessionStorage.getItem("walletAddress") })
 
             // Display success message
@@ -90,7 +120,7 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Purchase Durian :rating by consumer
+                                Rating by consumer
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">
@@ -108,6 +138,7 @@ export default function Marketplace() {
                                         onChange={(e) => setHarvesterAddress(e.target.value)}
                                     />
                                 </FormControl>
+                                <FormControl></FormControl>
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
                                 Purchase Durian
@@ -115,6 +146,88 @@ export default function Marketplace() {
                         </Box>
                     </Box>
                 </Card>
+                <div>
+                    <Card p="4" mb="4">
+                        <Text mb="2">Taste</Text>
+                        <Slider
+                            defaultValue={taste}
+                            min={1}
+                            max={5}
+                            step={1}
+                            w="200px"
+                            onChange={handleTasteChange}
+                        >
+                            <SliderTrack bg="gray.200">
+                                <SliderFilledTrack bg="brand.500" />
+                            </SliderTrack>
+                            <SliderThumb />
+                        </Slider>
+                    </Card>
+                    <Card p="4" mb="4">
+                        <Text mb="2">Condition</Text>
+                        <Slider
+                            defaultValue={condition}
+                            min={1}
+                            max={5}
+                            step={1}
+                            w="200px"
+                            onChange={handleConditionChange}
+                        >
+                            <SliderTrack bg="gray.200">
+                                <SliderFilledTrack bg="brand.500" />
+                            </SliderTrack>
+                            <SliderThumb />
+                        </Slider>
+                    </Card>
+                    <Card p="4" mb="4">
+                        <Text mb="2">Fragrance</Text>
+                        <Slider
+                            defaultValue={fragrance}
+                            min={1}
+                            max={5}
+                            step={1}
+                            w="200px"
+                            onChange={handleFragranceChange}
+                        >
+                            <SliderTrack bg="gray.200">
+                                <SliderFilledTrack bg="brand.500" />
+                            </SliderTrack>
+                            <SliderThumb />
+                        </Slider>
+                    </Card>
+                    <Card p="4" mb="4">
+                        <Text mb="2">Creaminess</Text>
+                        <Slider
+                            defaultValue={creaminess}
+                            min={1}
+                            max={5}
+                            step={1}
+                            w="200px"
+                            onChange={handleCreaminessChange}
+                        >
+                            <SliderTrack bg="gray.200">
+                                <SliderFilledTrack bg="brand.500" />
+                            </SliderTrack>
+                            <SliderThumb />
+                        </Slider>
+                    </Card>
+                    <Card p="4" mb="4">
+                        <Text mb="2">Ripeness</Text>
+                        <Slider
+                            defaultValue={ripeness}
+                            min={1}
+                            max={5}
+                            step={1}
+                            w="200px"
+                            onChange={handleRipenessChange}
+                        >
+                            <SliderTrack bg="gray.200">
+                                <SliderFilledTrack bg="brand.500" />
+                            </SliderTrack>
+                            <SliderThumb />
+                        </Slider>
+                    </Card>
+                </div>
             </SimpleGrid>
         </Box>
     )
