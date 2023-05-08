@@ -42,7 +42,6 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     struct durian {
         address ownerID;
         uint256 durianCode;
-        uint256 durianWeight;
         string durianType;
         uint256 harvestedDurianPrice;
         address harvesterID;
@@ -313,16 +312,11 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     // 1st step in supply chain process
     function produceDurianByHarvester(
         uint256 _durianCode,
-        uint256 _durianWeight,
+        uint256 _harvestedDurianPrice,
         string memory _durianType,
-        uint256 _farmId,
+        string memory _farmName,
         uint256 _treeId
     ) public onlyHarvester {
-        FarmStruct storage farm = farms[_farmId];
-        // for (uint256 i = 0; i < farm.trees.length; i++) {
-        //     require(farm.trees[i].treeId == _treeId, "Tree already exists in the farm");
-        // }
-        require(farms[_farmId].farmId != 0, "Farm does not exist");
         address distributorID;
         address retailerID;
         address consumerID;
@@ -330,12 +324,11 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         newProduce.ownerID = _msgSender();
         newProduce.durianCode = _durianCode;
         newProduce.harvesterID = _msgSender();
-        newProduce.durianWeight = _durianWeight;
         newProduce.durianType = _durianType;
         newProduce.treeId = _treeId;
-        newProduce.farmName = farm.farmName;
+        newProduce.farmName = _farmName;
         newProduce.harvestedTime = block.timestamp;
-        newProduce.harvestedDurianPrice = _durianWeight * 0.005 ether;
+        newProduce.harvestedDurianPrice = _harvestedDurianPrice;
         newProduce.durianState = defaultState;
         newProduce.distributorID = distributorID;
         newProduce.retailerID = retailerID;
@@ -372,18 +365,28 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
     }
 
     // 3rd step of suppply chain process
-    function purchaseDurianByDistributor(
-        uint256 _durianCode
-    )
-        public
-        payable
-        onlyDistributor
-        forSaleByHarvester(_durianCode)
-        paidEnough(durians[_durianCode].harvestedDurianPrice)
-        checkValue(durians[_durianCode].harvestedDurianPrice, payable(_msgSender()))
-    {
-        address payable ownerAddressPayable = _make_payable(durians[_durianCode].harvesterID); // make originFarmID payable
-        ownerAddressPayable.transfer(durians[_durianCode].harvestedDurianPrice);
+    // function purchaseDurianByDistributor(
+    //     uint256 _durianCode
+    // )
+    //     public
+    //     payable
+    //     onlyDistributor
+    //     forSaleByHarvester(_durianCode)
+    //     paidEnough(durians[_durianCode].harvestedDurianPrice)
+    //     // checkValue(durians[_durianCode].harvestedDurianPrice, payable(_msgSender()))
+    // {
+    //     address payable ownerAddressPayable = _make_payable(durians[_durianCode].ownerID);
+    //     ownerAddressPayable.transfer(durians[_durianCode].harvestedDurianPrice);
+    //     durians[_durianCode].ownerID = _msgSender();
+    //     durians[_durianCode].distributorID = _msgSender();
+    //     durians[_durianCode].durianState = State.PurchasedByDistributor;
+    //     duriansHistory[_durianCode].HTD = block.number;
+    //     emit PurchasedByDistributor(_durianCode);
+    // }
+
+    function purchaseDurianByDistributor(uint256 _durianCode) public payable {
+        address payable ownerAddressPayable = _make_payable(durians[_durianCode].ownerID);
+        ownerAddressPayable.transfer(msg.value);
         durians[_durianCode].ownerID = _msgSender();
         durians[_durianCode].distributorID = _msgSender();
         durians[_durianCode].durianState = State.PurchasedByDistributor;
@@ -464,7 +467,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         onlyRetailer
         forSaleByDistributor(_durianCode)
         paidEnough(durians[_durianCode].distributedDurianPrice)
-        checkValue(_durianCode, payable(_msgSender()))
+    // checkValue(_durianCode, payable(_msgSender()))
     {
         address payable ownerAddressPayable = _make_payable(durians[_durianCode].distributorID);
         ownerAddressPayable.transfer(durians[_durianCode].distributedDurianPrice);
@@ -526,7 +529,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         // onlyConsumer
         forSaleByRetailer(_durianCode)
         paidEnough(durians[_durianCode].retailerDurianPrice)
-        checkValue(durians[_durianCode].retailerDurianPrice, payable(_msgSender()))
+    // checkValue(durians[_durianCode].retailerDurianPrice, payable(_msgSender()))
     {
         durians[_durianCode].consumerID = _msgSender();
         address payable ownerAddressPayable = _make_payable(durians[_durianCode].retailerID);
@@ -570,7 +573,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         returns (
             uint256 durianToCode,
             address ownerID,
-            uint256 durianWeight,
+            uint256 harvestedDurianPrice,
             string memory durianType,
             State durianState,
             uint256 treeId,
@@ -582,7 +585,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         return (
             Durian.durianCode,
             Durian.ownerID,
-            Durian.durianWeight,
+            Durian.harvestedDurianPrice,
             Durian.durianType,
             Durian.durianState,
             Durian.treeId,

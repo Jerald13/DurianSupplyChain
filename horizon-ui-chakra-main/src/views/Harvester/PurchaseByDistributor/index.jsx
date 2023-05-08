@@ -68,15 +68,44 @@ export default function Marketplace() {
 
         console.log(contract)
         const durian = await contract.methods.fetchDurianBufferOne(harvesterAddress).call()
-        console.log(durian.durianCurrentPriceState)
+        console.log(durian.ownerID)
+        const acc = sessionStorage.getItem("walletAddress")
         try {
-            await contract.methods
-                .purchaseDurianByDistributor(harvesterAddress)
+            await contract.methods.purchaseDurianByDistributor(durian.durianToCode).send({
+                from: sessionStorage.getItem("walletAddress"),
+                to: durian.ownerID.toString,
+                value: web3.utils.toWei(durian.harvestedDurianPrice.toString(), "ether"),
+            })
 
-                .send({
-                    from: sessionStorage.getItem("walletAddress"),
-                    value: durian.durianCurrentPriceState,
-                })
+            // const contractAddress = durian.ownerID.toString()
+            // const amountToSend = 1.0 // Amount in Ether
+            // // Request permission to connect the user's Metamask wallet
+            // await window.ethereum.enable()
+
+            // // Get the selected account from Metamask
+            // const accounts = await web3.eth.getAccounts()
+            // const senderAddress = accounts[0]
+
+            // // Create a transaction object
+            // const transactionObject = {
+            //     from: senderAddress,
+            //     to: contractAddress,
+            //     value: web3.utils.toWei("3", "ether"),
+            // }
+
+            // // // Send the transaction
+            // // const result = await web3.eth.sendTransaction(transactionObject)
+            // // console.log("Transaction hash:", result.transactionHash)
+
+            // await contract.methods
+            //     .transferEther(
+            //         durian.ownerID,
+            //         web3.utils.toWei(durian.harvestedDurianPrice.toString(), "ether")
+            //     )
+            //     .send({
+            //         from: acc,
+            //         value: web3.utils.toWei(durian.harvestedDurianPrice.toString(), "ether"),
+            //     })
 
             // Display success message
             toast.success("Distributor Purchase successfully!")

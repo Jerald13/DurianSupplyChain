@@ -114,106 +114,98 @@ export default function Marketplace() {
 
     return (
         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
-            {isAuthorized ? (
-                <SimpleGrid columns={1} spacing={6}>
-                    <Card>
-                        <Box p="6">
-                            <Box textAlign="center">
-                                <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                    Add Distributor Address
-                                </Text>
-                            </Box>
-                            <Box my={4} textAlign="left">
-                                <SimpleGrid columns={2} spacing={3}>
-                                    <FormControl>
-                                        <FormLabel htmlFor="harvesterId" color={textColor}>
-                                            Distributor Address
-                                        </FormLabel>
-                                        <Input
-                                            id="HarvesterAddress"
-                                            placeholder="Enter Distributor Address"
-                                            colorScheme="white"
-                                            color={textColor}
-                                            value={harvesterAddress}
-                                            onChange={(e) => setHarvesterAddress(e.target.value)}
-                                        />
-                                    </FormControl>
-                                </SimpleGrid>
-                                <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-                                    Add Distributor
-                                </Button>
-                            </Box>
+            <SimpleGrid columns={1} spacing={6}>
+                <Card>
+                    <Box p="6">
+                        <Box textAlign="center">
+                            <Text fontSize="xl" fontWeight="bold" color={textColor}>
+                                Add Distributor Address
+                            </Text>
                         </Box>
-                    </Card>
+                        <Box my={4} textAlign="left">
+                            <SimpleGrid columns={2} spacing={3}>
+                                <FormControl>
+                                    <FormLabel htmlFor="harvesterId" color={textColor}>
+                                        Distributor Address
+                                    </FormLabel>
+                                    <Input
+                                        id="HarvesterAddress"
+                                        placeholder="Enter Distributor Address"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={harvesterAddress}
+                                        onChange={(e) => setHarvesterAddress(e.target.value)}
+                                    />
+                                </FormControl>
+                            </SimpleGrid>
+                            <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
+                                Add Distributor
+                            </Button>
+                        </Box>
+                    </Box>
+                </Card>
 
-                    <Card>
-                        <Box p="6">
-                            <Box textAlign="center">
-                                <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                    Check Distributor Address
-                                </Text>
-                            </Box>
-                            <Box my={4} textAlign="left">
-                                <SimpleGrid columns={2} spacing={3}>
-                                    <FormControl>
-                                        <FormLabel htmlFor="CheckharvesterId" color={textColor}>
-                                            Distributor Address
-                                        </FormLabel>
-                                        <Input
-                                            id="CheckHarvesterAddress"
-                                            placeholder="Enter Distributor Address"
-                                            colorScheme="white"
-                                            color={textColor}
-                                            value={checkHarvesterAddress}
-                                            onChange={(e) =>
-                                                setCheckHarvesterAddress(e.target.value)
-                                            }
-                                        />
-                                    </FormControl>
-                                </SimpleGrid>
-                                <Button mt={4} colorScheme="blue" onClick={handleCheckSubmit}>
-                                    {checkProcessing ? "Processing" : "Check Distributor"}
-                                    {checkProcessing && <Spinner size="sm" ml="2" zIndex="9999" />}
-                                </Button>
-                            </Box>
+                <Card>
+                    <Box p="6">
+                        <Box textAlign="center">
+                            <Text fontSize="xl" fontWeight="bold" color={textColor}>
+                                Check Distributor Address
+                            </Text>
                         </Box>
-                    </Card>
+                        <Box my={4} textAlign="left">
+                            <SimpleGrid columns={2} spacing={3}>
+                                <FormControl>
+                                    <FormLabel htmlFor="CheckharvesterId" color={textColor}>
+                                        Distributor Address
+                                    </FormLabel>
+                                    <Input
+                                        id="CheckHarvesterAddress"
+                                        placeholder="Enter Distributor Address"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={checkHarvesterAddress}
+                                        onChange={(e) => setCheckHarvesterAddress(e.target.value)}
+                                    />
+                                </FormControl>
+                            </SimpleGrid>
+                            <Button mt={4} colorScheme="blue" onClick={handleCheckSubmit}>
+                                {checkProcessing ? "Processing" : "Check Distributor"}
+                                {checkProcessing && <Spinner size="sm" ml="2" zIndex="9999" />}
+                            </Button>
+                        </Box>
+                    </Box>
+                </Card>
 
-                    <Card>
-                        <Box p="6">
-                            <Box textAlign="center">
-                                <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                    Remove Distributor Address
-                                </Text>
-                            </Box>
-                            <Box my={4} textAlign="left">
-                                <SimpleGrid columns={2} spacing={3}>
-                                    <FormControl>
-                                        <FormLabel htmlFor="RemoveharvesterId" color={textColor}>
-                                            Distributor Address
-                                        </FormLabel>
-                                        <Input
-                                            id="RemoveHarvesterAddress"
-                                            placeholder="Enter Distributor Address"
-                                            colorScheme="white"
-                                            color={textColor}
-                                            value={removeHarvesterAddress}
-                                            onChange={(e) =>
-                                                setRemoveHarvesterAddress(e.target.value)
-                                            }
-                                        />
-                                    </FormControl>
-                                </SimpleGrid>
-                                <Button mt={4} colorScheme="blue" onClick={removeHandleSubmit}>
-                                    Remove Distributor
-                                </Button>
-                            </Box>
+                <Card>
+                    <Box p="6">
+                        <Box textAlign="center">
+                            <Text fontSize="xl" fontWeight="bold" color={textColor}>
+                                Remove Distributor Address
+                            </Text>
                         </Box>
-                    </Card>
-                </SimpleGrid>
-            ) : (
-                <Text>Not Authorized</Text>
-            )}
+                        <Box my={4} textAlign="left">
+                            <SimpleGrid columns={2} spacing={3}>
+                                <FormControl>
+                                    <FormLabel htmlFor="RemoveharvesterId" color={textColor}>
+                                        Distributor Address
+                                    </FormLabel>
+                                    <Input
+                                        id="RemoveHarvesterAddress"
+                                        placeholder="Enter Distributor Address"
+                                        colorScheme="white"
+                                        color={textColor}
+                                        value={removeHarvesterAddress}
+                                        onChange={(e) => setRemoveHarvesterAddress(e.target.value)}
+                                    />
+                                </FormControl>
+                            </SimpleGrid>
+                            <Button mt={4} colorScheme="blue" onClick={removeHandleSubmit}>
+                                Remove Distributor
+                            </Button>
+                        </Box>
+                    </Box>
+                </Card>
+            </SimpleGrid>
         </Box>
     )
 }

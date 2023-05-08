@@ -23,6 +23,7 @@ import {
     Td,
     Progress,
     Checkbox,
+    Divider,
 } from "@chakra-ui/react"
 // Custom components
 import Banner from "views/admin/marketplace/components/Banner"
@@ -103,13 +104,13 @@ export default function Marketplace() {
                     const formattedTimestamp3 = convertTimestamp(bufferTwo.retailedTime)
 
                     const formattedTimestamp4 = convertTimestamp(bufferThree.consumerBoughtTime)
-
+                    console.log(bufferOne.farmName + "WANT THIS")
                     // Combine the data from the two buffers into a single object
                     var digit = Number(bufferOne.durianState)
                     const durian = {
                         durianToCode: bufferOne.durianToCode,
                         ownerID: bufferOne.ownerID,
-                        durianWeight: bufferOne.durianWeight,
+                        HarvesterPrice: bufferOne.harvestedDurianPrice,
                         statusPercentage: (digit + 1) * 7.7,
                         status: bufferOne.durianState,
                         durianType: bufferOne.durianType,
@@ -334,34 +335,34 @@ export default function Marketplace() {
                 </Flex>
                 <Card>
                     <Table variant="simple" color="gray.500">
-                        <Thead>
-                            <Tr>
-                                <Th pe="10px" borderColor="transparent">
-                                    <Flex
-                                        justify="space-between"
-                                        align="center"
-                                        fontSize={{ sm: "10px", lg: "12px" }}
-                                        color="gray.400"
-                                    >
-                                        Durian Detail
-                                    </Flex>
-                                </Th>
-
-                                <Th pe="10px" borderColor="transparent">
-                                    <Flex
-                                        justify="space-between"
-                                        align="center"
-                                        fontSize={{ sm: "10px", lg: "12px" }}
-                                        color="gray.400"
-                                    >
-                                        Value
-                                    </Flex>
-                                </Th>
-                            </Tr>
-                        </Thead>
+                        <Thead></Thead>
                         <Tbody>
                             {durians.map((durian, index) => (
                                 <React.Fragment key={index}>
+                                    {index !== 0 && <Divider my={20} />}
+                                    <Tr>
+                                        <Th pe="10px" borderColor="transparent">
+                                            <Flex
+                                                justify="space-between"
+                                                align="center"
+                                                fontSize={{ sm: "10px", lg: "12px" }}
+                                                color="gray.400"
+                                            >
+                                                Durian Detail
+                                            </Flex>
+                                        </Th>
+
+                                        <Th pe="10px" borderColor="transparent">
+                                            <Flex
+                                                justify="space-between"
+                                                align="center"
+                                                fontSize={{ sm: "10px", lg: "12px" }}
+                                                color="gray.400"
+                                            >
+                                                Value
+                                            </Flex>
+                                        </Th>
+                                    </Tr>
                                     <Tr>
                                         <Td
                                             fontSize={{ sm: "14px" }}
@@ -421,7 +422,7 @@ export default function Marketplace() {
                                                 mt={2}
                                             >
                                                 <Text color={textColorBrand}>
-                                                    {durian.harvestedTime}
+                                                    {durian.ownerID}
                                                 </Text>
                                             </Flex>
                                         </Td>
@@ -439,7 +440,7 @@ export default function Marketplace() {
                                             ></Flex>
 
                                             <Text fontWeight="bold" color={textColor}>
-                                                Durian To durianWeight:
+                                                Durian To HarvesterPrice:
                                             </Text>
                                         </Td>
                                         <Td
@@ -453,7 +454,7 @@ export default function Marketplace() {
                                                 mt={2}
                                             >
                                                 <Text color={textColorBrand}>
-                                                    {durian.durianWeight}
+                                                    {durian.HarvesterPrice} ETH
                                                 </Text>
                                             </Flex>
                                         </Td>
@@ -522,6 +523,68 @@ export default function Marketplace() {
                                                 <Text color={textColorBrand}>
                                                     {durian.durianType}
                                                 </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To Farm Name:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>
+                                                    {durian.farmName}
+                                                </Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            ></Flex>
+
+                                            <Text fontWeight="bold" color={textColor}>
+                                                Durian To Tree Id:
+                                            </Text>
+                                        </Td>
+                                        <Td
+                                            fontSize={{ sm: "14px" }}
+                                            minW={{ sm: "150px", md: "200px", lg: "auto" }}
+                                            borderColor="transparent"
+                                        >
+                                            <Flex
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                mt={2}
+                                            >
+                                                <Text color={textColorBrand}>{durian.treeId}</Text>
                                             </Flex>
                                         </Td>
                                     </Tr>

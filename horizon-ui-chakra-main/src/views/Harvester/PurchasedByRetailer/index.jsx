@@ -68,15 +68,21 @@ export default function Marketplace() {
         console.log(harvesterAddress)
         console.log(contract)
         const durian = await contract.methods.fetchDurianBufferOne(harvesterAddress).call()
-        console.log(durian.durianCurrentPriceState)
+        console.log(durian.ownerID)
+        // const etherToWei = web3.utils.toWei(durian.harvestedDurianPrice, "ether") // Conversion factor from Ether to Wei
+        // const weiAmount = web3.utils.toBN(amount).mul(web3.utils.toBN(etherToWei))
         try {
-            await contract.methods
-                .purchaseDurianByRetailer(harvesterAddress)
+            // await contract.methods.purchaseDurianByRetailer(harvesterAddress).send({
+            //     from: sessionStorage.getItem("walletAddress"),
+            //     to: durian.ownerID,
+            //     value: web3.utils.toWei(durian.harvestedDurianPrice, "ether"),
+            // })
 
-                .send({
-                    from: sessionStorage.getItem("walletAddress"),
-                    value: durian.durianCurrentPriceState,
-                })
+            await contract.methods.purchaseDurianByRetailer(harvesterAddress).send({
+                from: sessionStorage.getItem("walletAddress"),
+                to: durian.ownerID.toString,
+                value: web3.utils.toWei(durian.harvestedDurianPrice.toString(), "ether"),
+            })
 
             // Display success message
             toast.success("Distributor Purchase successfully!")

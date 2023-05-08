@@ -36,7 +36,7 @@ export default function Marketplace() {
     const [durianType, setDurianType] = useState("")
     const [durianWeight, setDurianWeight] = useState(0)
     const [durians, setDurians] = useState([])
-    const [farmName, setFarmName] = useState(0)
+    const [farmName, setFarmName] = useState("")
     const [treeId, setTreeId] = useState(0)
 
     useEffect(() => {
@@ -146,8 +146,10 @@ export default function Marketplace() {
                                         Farm Name
                                     </FormLabel>
                                     <Select onChange={(e) => setFarmName(e.target.value)}>
+                                        <option>Select Option</option>
+
                                         {durians.map((durian) => (
-                                            <option key={durian.id} value={durian.id}>
+                                            <option key={durian.id} value={durian.farmName}>
                                                 {durian.farmName}
                                             </option>
                                         ))}
@@ -185,15 +187,14 @@ export default function Marketplace() {
                                 </FormControl>
                                 <FormControl>
                                     <FormLabel htmlFor="durianWeight" color={textColor}>
-                                        Durian Weight
+                                        Durian Price ( ETH )
                                     </FormLabel>
                                     <Input
                                         id="durianWeight"
-                                        placeholder="Enter Durian Weight"
+                                        placeholder="Enter Durian Price"
                                         colorScheme="white"
                                         color={textColor}
                                         type="number"
-                                        min="0"
                                         value={durianWeight}
                                         onChange={handleDurianWeightChange}
                                     />

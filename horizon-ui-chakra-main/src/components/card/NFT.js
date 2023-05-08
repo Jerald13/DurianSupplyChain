@@ -100,7 +100,8 @@ export default function NFT(props) {
 
                 .send({
                     from: sessionStorage.getItem("walletAddress"),
-                    value: durianPrice,
+                    to: durian.ownerID.toString,
+                    value: web3.utils.toWei(durian.harvestedDurianPrice.toString(), "ether"),
                 })
 
             // Display success message

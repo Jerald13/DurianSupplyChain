@@ -110,10 +110,14 @@ function App(props) {
         if (currentAccount !== "") {
             const owner = await contract.methods.isOwner(currentAccount).call()
             const harvester = await contract.methods.isHarvester(currentAccount).call()
+            const distributor = await contract.methods.isDistributor(currentAccount).call()
+
             const retailer = await contract.methods.isRetailer(currentAccount).call()
             console.log(owner)
             if (owner) {
                 setAcc("Owner")
+            } else if (distributor) {
+                setAcc("Distributor")
             } else if (harvester) {
                 setAcc("Harvester")
             } else if (retailer) {
