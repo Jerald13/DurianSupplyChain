@@ -536,6 +536,7 @@ contract durianSupplyChain is HarvesterRole, DistributorRole, RetailerRole, Cons
         ownerAddressPayable.transfer(durians[_durianCode].retailerDurianPrice);
         durians[_durianCode].ownerID = _msgSender();
         durians[_durianCode].consumerID = _msgSender();
+        durians[_durianCode].consumerBoughtTime = block.timestamp;
         durians[_durianCode].durianState = State.PurchasedByConsumer;
         duriansHistory[_durianCode].RTC = block.number;
         emit PurchasedByConsumer(_durianCode);

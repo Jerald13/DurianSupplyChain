@@ -25,6 +25,7 @@ import {
     Checkbox,
     Divider,
 } from "@chakra-ui/react"
+// You should also import some data for the timeline
 // Custom components
 import Banner from "views/admin/marketplace/components/Banner"
 import TableTopCreators from "views/admin/marketplace/components/TableTopCreators"
@@ -39,6 +40,7 @@ import { ToastContainer, toast } from "react-toastify"
 
 import tableDataTopCreators from "views/admin/marketplace/variables/tableDataTopCreators.json"
 import { tableColumnsTopCreators } from "views/admin/marketplace/variables/tableColumnsTopCreators"
+import { AddIcon, ChatIcon, DownloadIcon, CheckIcon } from "@chakra-ui/icons"
 
 export default function Marketplace() {
     // Chakra Color Mode
@@ -70,6 +72,7 @@ export default function Marketplace() {
     }
     const [durians, setDurians] = useState([])
     const [durianCodes, setDurianCodes] = useState([])
+
     useEffect(() => {
         async function fetchData() {
             try {
@@ -104,7 +107,7 @@ export default function Marketplace() {
                     const formattedTimestamp3 = convertTimestamp(bufferTwo.retailedTime)
 
                     const formattedTimestamp4 = convertTimestamp(bufferThree.consumerBoughtTime)
-                    console.log(bufferOne.farmName + "WANT THIS")
+                    console.log(bufferThree.consumerBoughtTime + "WANT THIS")
                     // Combine the data from the two buffers into a single object
                     var digit = Number(bufferOne.durianState)
                     const durian = {
@@ -139,16 +142,15 @@ export default function Marketplace() {
                         consumerID:
                             bufferThree.consumerID === "0x0000000000000000000000000000000000000000"
                                 ? "-"
-                                : bufferTwo.consumerID,
+                                : bufferThree.consumerID,
                         consumerBoughtTime: formattedTimestamp4,
-                        packaging: bufferThree.packaging === "" ? bufferFour.packaging : "-",
-                        piecesFlesh: bufferThree.piecesFlesh === 0 ? bufferFour.piecesFlesh : "-",
-
-                        taste: bufferFour.taste === 0 ? bufferFour.taste : "-",
-                        condition: bufferFour.condition === 0 ? bufferFour.condition : "-",
-                        fragrance: bufferFour.fragrance === 0 ? bufferFour.fragrance : "-",
-                        creaminess: bufferFour.creaminess === 0 ? bufferFour.creaminess : "-",
-                        ripeness: bufferFour.ripeness === 0 ? bufferFour.ripeness : "-",
+                        packaging: bufferThree.packaging === "" ? "-" : bufferThree.packaging,
+                        piecesFlesh: bufferThree.piecesFlesh === 0 ? "-" : bufferThree.piecesFlesh,
+                        taste: bufferFour.taste === 0 ? "-" : bufferFour.taste,
+                        condition: bufferFour.condition === 0 ? "-" : bufferFour.condition,
+                        fragrance: bufferFour.fragrance === 0 ? "-" : bufferFour.fragrance,
+                        creaminess: bufferFour.creaminess === 0 ? "-" : bufferFour.creaminess,
+                        ripeness: bufferFour.ripeness === 0 ? "-" : bufferFour.ripeness,
                     }
 
                     // Add the durian data to the array
@@ -263,10 +265,56 @@ export default function Marketplace() {
             }
         }
     }
+    const steps = [
+        "ProduceByHarvester",
+        "ForSaleByHarvester",
+        "PurchasedByDistributor",
+        "ShippedByHarvester",
+        "ReceivedByDistributor",
+        "ProcessedByDistributor",
+        "PackageByDistributor",
+        "ForSaleByDistributor",
+        "PurchasedByRetailer",
+        "ShippedByDistributor",
+        "ReceivedByRetailer",
+        "ForSaleByRetailer",
+        "PurchasedByConsumer",
+        "RateByConsumer",
+    ]
 
     return (
         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
             <SimpleGrid columns={1} spacing={6}>
+                <Card>
+                    <Box textAlign="center">
+                        <Text fontSize="xl" fontWeight="bold" color={textColor}>
+                            Supply Chain Procees
+                        </Text>
+                    </Box>
+                    <SimpleGrid
+                        columns={3}
+                        spacing={6}
+                        align="center"
+                        justify="center"
+                        mt={10}
+                        textAlign="center"
+                    >
+                        {steps.map((step, index) => (
+                            <Flex
+                                key={step}
+                                align="center"
+                                justify="space-between"
+                                mb={2}
+                                textAlign="center"
+                            >
+                                <Text fontWeight="bold" color="green.500" textAlign="center">
+                                    {index++ + " ) "}
+                                    {step}
+                                </Text>
+                            </Flex>
+                        ))}
+                    </SimpleGrid>
+                </Card>
                 <Card>
                     <Box p="6">
                         <Box textAlign="center">

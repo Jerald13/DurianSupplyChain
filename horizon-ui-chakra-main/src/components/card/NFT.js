@@ -79,10 +79,12 @@ export default function NFT(props) {
                     .fetchDurianBufferOne(durianCodes[i])
                     .call()
 
-                if (data === bufferOne.durianType) {
-                    setDurians(bufferOne.durianToCode)
-                    setDurianPrice(bufferOne.durianCurrentPriceState)
-                    return
+                if (bufferOne.durianState == "10") {
+                    if (data === bufferOne.durianType) {
+                        setDurians(bufferOne.durianToCode)
+                        setDurianPrice(bufferOne.durianCurrentPriceState)
+                        return
+                    }
                 }
             }
         } catch (error) {
@@ -94,6 +96,10 @@ export default function NFT(props) {
         event.preventDefault()
         fetchData()
         console.log(durians)
+        const durian = await contract.methods.fetchDurianBufferOne(durians).call()
+        console.log(durian.ownerID.toString)
+        console.log(durian.harvestedDurianPrice.toString())
+
         try {
             await contract.methods
                 .purchaseDurianByConsumer(durians)

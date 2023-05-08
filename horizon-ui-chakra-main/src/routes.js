@@ -215,7 +215,7 @@ let routes = [
         icon: <Icon as={MdStar} width="20px" height="20px" color="inherit" />,
         component: RatingByConsumer,
         ownerUser: "Owner",
-        authenticate: "Harvester",
+        authenticate: "Customer",
     },
 ]
 console.log(routes)

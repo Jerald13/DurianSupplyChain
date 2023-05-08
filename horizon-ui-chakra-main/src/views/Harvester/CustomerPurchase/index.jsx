@@ -87,6 +87,7 @@ export default function Marketplace() {
                     const bufferOne = await contract.methods
                         .fetchDurianBufferOne(durianCodes[i])
                         .call()
+
                     console.log(bufferOne.durianType)
                     if (bufferOne.durianType === "musang king") {
                         musangKing++

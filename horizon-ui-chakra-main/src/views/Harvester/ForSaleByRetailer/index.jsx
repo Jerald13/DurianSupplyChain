@@ -81,7 +81,7 @@ export default function Marketplace() {
                                 </FormControl>
                                 <FormControl>
                                     <FormLabel htmlFor="harvesterId" color={textColor}>
-                                        Durian ID
+                                        Set Price
                                     </FormLabel>
                                     <Input
                                         id="HarvesterAddress"
