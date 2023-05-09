@@ -141,7 +141,7 @@ export default function Marketplace() {
                                 <FormControl></FormControl>
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-                                Purchase Durian
+                                Rate Durian
                             </Button>
                         </Box>
                     </Box>

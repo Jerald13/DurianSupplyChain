@@ -248,7 +248,7 @@ export default function NFT(props) {
                                 isDisabled={durianPrice === 0}
                                 onClick={handleButtonClick}
                             >
-                                Place Bid
+                                Buy Durian
                             </Button>
                         </Link>
                     </Flex>

@@ -70,7 +70,7 @@ export default function Marketplace() {
 
         try {
             await contract.methods
-                .shippedDurianByHarvester(harvesterAddress)
+                .receivedDurianByDistributor(harvesterAddress)
 
                 .send({ from: sessionStorage.getItem("walletAddress") })
 
@@ -90,7 +90,7 @@ export default function Marketplace() {
                     <Box p="6">
                         <Box textAlign="center">
                             <Text fontSize="xl" fontWeight="bold" color={textColor}>
-                                Shipped by harvester
+                                Received by distributor
                             </Text>
                         </Box>
                         <Box my={4} textAlign="left">
@@ -110,7 +110,7 @@ export default function Marketplace() {
                                 </FormControl>
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-                                Purchase Durian
+                                Receive Durian
                             </Button>
                         </Box>
                     </Box>

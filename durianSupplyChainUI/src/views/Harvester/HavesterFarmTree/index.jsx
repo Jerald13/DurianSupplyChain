@@ -97,7 +97,7 @@ export default function Marketplace() {
             await contract.methods.addFarm(harvesterAddress).send({
                 from: sessionStorage.getItem("walletAddress"),
             })
-            toast.success("Distributor Purchase successfully!")
+            toast.success("Successfully!")
             fetchData()
         } catch (error) {
             console.error(error)
@@ -150,7 +150,7 @@ export default function Marketplace() {
                                 </FormControl>
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-                                Purchase Durian
+                                Add New Farm
                             </Button>
                         </Box>
                     </Box>
@@ -192,7 +192,7 @@ export default function Marketplace() {
                                 </FormControl>
                             </SimpleGrid>
                             <Button mt={4} colorScheme="blue" onClick={handleTreeSubmit}>
-                                Purchase Durian
+                                Create Tree
                             </Button>
                         </Box>
                     </Box>
